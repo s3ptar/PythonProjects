@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+
+    <meta charset="utf-8">
+    <title>Basic Layout</title>
+    <meta name="viewport" content="initial-scale=1.0, width=device-width">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="content/js/javascript.js"></script>
+	<link rel="stylesheet" href="content/css/style.css">
+
+    <!-- https://www.w3schools.com/howto/howto_css_fixed_sidebar.asp >
+    <!-- https://jsfiddle.net/TheSleepingEight/ucfaacsk/7/>
+    <!-- https://fontawesome.com/v4/ -->
+    <!--<script src="jquery.min.js" type="text/javascript">-->
+    <!--https://codelabs.developers.google.com/codelabs/web-serial#3-->
+
+  </head>
+
+  <body>
+
+    <!--------------------------------------------- Header declaration ------------------------------------------------------------------->
+    <div id="id_header" class="cl_header cl_bars_background">
+    
+        <div id="id_header_left" class="cl_header_left">
+            <p id="id_header_day_and_time"> Wochentag + Zeit </p>
+            <p id="id_header_date"> Datum </p>
+            <p id="id_header_user"> user </p>
+            <p id="id_header_device"> DeviceID </p>        
+        </div>
+        <div id="id_header_center" class="cl_header_center">
+            <h1 id="sitename">
+                Projekt Discription
+            </h1>
+        </div>
+        <div id="id_header_right" class="cl_header_right">
+        
+        </div>
+    
+    </div> 
+    
+    <!--------------------------------------------- Content declaration ------------------------------------------------------------------>
+    
+    <div class="cl_content">
+        <div id="id_content_home" class="cl_content_element">
+            Home
+			<span id="ADCValue">0</span>
+        </div>
+        <div id="id_content_webserial" class="cl_content_element">
+		        <div id="notSupported" class="notSupported">
+                Sorry, <b>Web Serial</b> is not supported on this device, make sure
+                you're running Chrome 89 or later.
+            </div>
+			      <div class="right">
+                <select id="baudRate"></select>
+                <button id="butSerialConnect" type="button">Connect</button>
+            </div>
+        </div>
+
+    </div>
+    
+    <!--------------------------------------------- footer declaration ------------------------------------------------------------------->
+    <div id="id_footer" class="cl_footer cl_bars_background">
+        <a class="active" href="#" onclick="content_selector('id_content_home')"><i class="fa fa-home"></i>Home</a>
+        <a href="#news" onclick="content_selector('id_content_webserial')">WebSerial</a>
+    </div> 
+
+
+  </body>
+
+</html>
