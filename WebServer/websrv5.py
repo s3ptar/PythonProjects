@@ -22,7 +22,8 @@ This is a temporary script file.
 import http.server
 import socketserver
 import json
-import logging
+import logging.config
+from pythonjsonlogger import jsonlogger
 
 """*********************************************************************
 * Informations
@@ -32,13 +33,37 @@ import logging
 * Declarations
 *********************************************************************"""
 
-logging.basicConfig(filename="logging.log", encoding='utf-8')
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "format": "%(asctime)s %(levelname)s %(message)s",
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+        }
+    },
+    "handlers": {
+        "stdout": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "json",
+        },
+        "file":{
+            "class" : "logging.handlers.RotatingFileHandler",
+            "formatter": "json",
+            "filename": "logfile.log",
+            "maxBytes": 1024000,
+            "backupCount": 3,
+        },
+    },
+    "loggers": {"": {"handlers": ["file"], "level": "DEBUG"}},
+}
 
 """*********************************************************************
 * Constant
 *********************************************************************"""
 hostName = "localhost"
-serverPort = 8089
+serverPort = 8087
 DIRECTORY = "content"
 
 """*********************************************************************
@@ -66,7 +91,9 @@ DIRECTORY = "content"
 *********************************************************************"""
 class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     
+    
     def do_GET(self):
+        logging.info('WEeHandler Request');
         print(self.path.rpartition('.')[-1])
         print(self.path)
         if self.path == '/':
@@ -117,6 +144,8 @@ if __name__ == "__main__":
     #body = open(project_path+'\\content\\index.html').read()
     #print(project_path+'\\content\\index.html')
     #print((body))
+    logging.config.dictConfig(LOGGING)
+
     Handler = HttpRequestHandler
     Handler.extensions_map.update({
         '.html': 'text/html',
@@ -130,6 +159,8 @@ if __name__ == "__main__":
     Handler.DIRECTORY = "content"
     my_server = socketserver.TCPServer(("", serverPort), Handler)
     print("Server started http://%s:%s" % (hostName, serverPort))
+    logging.info("An info")
+    logging.warning("A warning")
 
     try:
         my_server.serve_forever()
