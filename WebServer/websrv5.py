@@ -22,6 +22,7 @@ This is a temporary script file.
 import http.server
 import socketserver
 import json
+import logging
 
 """*********************************************************************
 * Informations
@@ -30,6 +31,8 @@ import json
 """*********************************************************************
 * Declarations
 *********************************************************************"""
+
+logging.basicConfig(filename="logging.log", encoding='utf-8')
 
 """*********************************************************************
 * Constant
