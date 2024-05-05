@@ -1,6 +1,8 @@
 import numpy as np
 import win32gui, win32ui, win32con
-
+import pyautogui
+import imutils
+import cv2 as cv
 
 class WindowCapture:
 
@@ -14,16 +16,14 @@ class WindowCapture:
     offset_y = 0
 
     # constructor
-    def __init__(self, window_name=None):
-        # find the handle for the window we want to capture.
-        # if no window name is given, capture the entire screen
-        if window_name is None:
-            self.hwnd = win32gui.GetDesktopWindow()
-        else:
-            self.hwnd = win32gui.FindWindow(None, window_name)
-            if not self.hwnd:
-                raise Exception('Window not found: {}'.format(window_name))
-
+    def __init__(self, window_name):
+        # find the handle for the window we want to capture
+        self.hwnd = win32gui.FindWindow(None, window_name)
+        if not self.hwnd:
+            raise Exception('Window not found: {}'.format(window_name))
+        #print(hex(self.hwnd), win32gui.GetWindowText(self.hwnd))
+        #move left top
+        #win32gui.MoveWindow(self.hwnd,0,0,1920,1080, 1)
         # get the window size
         window_rect = win32gui.GetWindowRect(self.hwnd)
         self.w = window_rect[2] - window_rect[0]
@@ -41,12 +41,10 @@ class WindowCapture:
         # images into actual screen positions
         self.offset_x = window_rect[0] + self.cropped_x
         self.offset_y = window_rect[1] + self.cropped_y
-        print("width = " + f'{self.w}' + "\r\n heigth = " + f'{self.h}' +
-              "\r\n x_offset = " + f'{self.offset_x }'
-              + "\r\n y_offset = " + f'{self.offset_y}')
 
     def get_screenshot(self):
 
+        print( "Screen from " + hex(self.hwnd), win32gui.GetWindowText(self.hwnd))
         # get the window image data
         wDC = win32gui.GetWindowDC(self.hwnd)
         dcObj = win32ui.CreateDCFromHandle(wDC)
@@ -55,9 +53,8 @@ class WindowCapture:
         dataBitMap.CreateCompatibleBitmap(dcObj, self.w, self.h)
         cDC.SelectObject(dataBitMap)
         cDC.BitBlt((0, 0), (self.w, self.h), dcObj, (self.cropped_x, self.cropped_y), win32con.SRCCOPY)
-
         # convert the raw data into a format opencv can read
-        #dataBitMap.SaveBitmapFile(cDC, 'debug.bmp')
+        dataBitMap.SaveBitmapFile(cDC, 'debug.bmp')
         signedIntsArray = dataBitMap.GetBitmapBits(True)
         img = np.fromstring(signedIntsArray, dtype='uint8')
         img.shape = (self.h, self.w, 4)
@@ -81,6 +78,18 @@ class WindowCapture:
         img = np.ascontiguousarray(img)
 
         return img
+    
+    def saveScreenShot(self):
+        image = pyautogui.screenshot(region=(self.offset_x, self.offset_y, self.w, self.h))
+        image = cv.cvtColor(np.array(image), cv.COLOR_RGB2BGR)
+        cv.imwrite("currentscreen.png", image)
+
+        return image
+
+    def saveRegion(self, region):
+        image = pyautogui.screenshot(region=(self.offset_x+region[0], self.offset_y+region[1], region[2], region[3]))
+        image = cv.cvtColor(np.array(image), cv.COLOR_RGB2BGR)
+        cv.imwrite("currentregion.png", image)
 
     # find the name of the window you're interested in.
     # once you have it, update window_capture()
@@ -98,8 +107,9 @@ class WindowCapture:
     # return incorrect coordinates, because the window position is only calculated in
     # the __init__ constructor.
     def get_screen_position(self, pos):
-        print("xpos = " + pos[0] + self.offset_x)
         return (pos[0] + self.offset_x, pos[1] + self.offset_y)
     
-    list_window_names()
+    #list_window_names()
+
+
     

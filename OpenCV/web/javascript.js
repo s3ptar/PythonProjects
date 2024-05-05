@@ -38,7 +38,7 @@ function ShowDateAndTime(){
   
     var el = document.getElementById("testimg");  
   
-    var queryString = "..\\Screenshot.png?t=" + timestamp;    
+    var queryString = "..\\currentscreen.png?t=" + timestamp;    
    
     el.src = queryString; 
 	
@@ -59,7 +59,7 @@ function Start(status) {
 	// create a new timestamp     
 	var timestamp = new Date().getTime();     
 	var el = document.getElementById("testimg");     
-	el.src = "..\\Screenshot.png?t=" + timestamp;  
+	el.src = "..\\currentscreen.png?t=" + timestamp;  
     // add your script calls here...
 
 }
