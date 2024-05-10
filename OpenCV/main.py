@@ -49,35 +49,18 @@ def move_mouse(target_pos):
     sleep(0.5)
     pyautogui.mouseUp()
 
-def move_mouse_click(target_pos):
+def move_mouse_click(target_pos,x_offset = 0, y_offset = 0):
     screen_x, screen_y = wincap.get_screen_position(target_pos)
     # print('Moving mouse to x:{} y:{}'.format(screen_x, screen_y))
     # print('Moving mouse to x:{} y:{}'.format(screen_x, screen_y))
     # move the mouse
-    pyautogui.moveTo(x=screen_x, y=screen_y)
+    pyautogui.moveTo(x=screen_x+x_offset, y=screen_y+y_offset)
     pyautogui.mouseDown()
     pyautogui.click()
     sleep(0.5)
     pyautogui.mouseUp()
 
-"""*********************************************************************
-*! \fn          move_mouse(target_pos)
-*  \brief       set mouse to posotion and click
-*  \param       none
-*  \exception   none
-*  \return      none
-*********************************************************************"""
-def confirm_screen(basic_img, search_img, threshold):
-    current_screen_image = cv.imread(basic_img, cv.IMREAD_COLOR)
-    hostile_image = cv.imread(search_img, cv.IMREAD_COLOR)
-    result = cv.matchTemplate(current_screen_image, hostile_image, cv.TM_SQDIFF_NORMED)
-    #threshold = 0.17
-    # The np.where() return value will look like this:
-    # (array([482, 483, 483, 483, 484], dtype=int32), array([514, 513, 514, 515, 514], dtype=int32))
-    locations = np.where(result <= threshold)
-    # We can zip those up into a list of (x, y) position tuples
-    locations = list(zip(*locations[::-1]))
-    return locations
+
 
 __name__ == '__main__'
 
@@ -90,34 +73,56 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 wincap = WindowCapture('Star Trek Fleet Command')
 
 #wincap.saveRegion(region_dock1_no_chat)
-#sleep(30)
+#sleep(200)
 
 
 #start state machine
 while(True):
 
-    wincap.saveScreenShot()
+    #wincap.saveScreenShot()
     current_state = next_state
     log.debug_msg("state is " + current_state)
     match current_state:
         case "init":
             #check if chat active.
-            pos = confirm_screen('currentscreen.png', './picture/chat_on_right_side.png', 0.17)
+            pos = state_machine.confirm_screen('currentscreen.png', './picture/chat_on_right_side.png', 0.17)
             if pos:
-                log.debug_msg("chat open")
-                pos = confirm_screen('currentscreen.png', './picture/chat_side_close.png', 0.17)
+                log.debug_msg("chat window is open")
+                pos = state_machine.confirm_screen('currentscreen.png', './picture/chat_side_close.png', 0.17)
                 move_mouse_click(pos[0])
             else:
-                log.debug_msg("chat close")
+                log.debug_msg("chat window closed")
                 next_state = "select_ship"
         case "select_ship":
+            log.debug_msg("select ship")
             move_mouse(pos_dock1_no_chat)
-            sleep(1);
+            sleep(1)
+            move_mouse(pos_location_btn_no_chat)
+            next_state = "send_system"
+        case "send_system":
+            state_machine.send_to_system("miers")
+            log.debug_msg("send to system")
+            next_state = "wait_for_arrive"
+        case "wait_for_arrive":
+            #wincap.saveRegion(region_dock1_no_chat)
+            pos = state_machine.confirm_region('currentregion.png', './picture/ship_idle.png', 0.17, region_dock1_no_chat)
+            if (pos):
+                log.debug_msg("schiff angekommen")
+                next_state = "center_ship"
+            else:
+                log.debug_msg("schiff unterwegs")
+        case "center_ship":
+            move_mouse(pos_dock1_no_chat)
+            sleep(1)
             move_mouse(pos_location_btn_no_chat)
             next_state = "find_target"
+        case "find_target":
+            log.debug_msg("Angriff Ziel")
+            state_machine.attack_target(1)
+            next_state = "wait_for_arrive"
         case _:
             log.debug_msg("default_state")
-    sleep(10)
+    sleep(2)
 
 
 loop_time = time()
