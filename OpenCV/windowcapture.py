@@ -79,10 +79,11 @@ class WindowCapture:
 
         return img
     
-    def saveScreenShot(self):
+    def saveScreenShot(self,debug_enable=0):
         image = pyautogui.screenshot(region=(self.offset_x, self.offset_y, self.w, self.h))
         image = cv.cvtColor(np.array(image), cv.COLOR_RGB2BGR)
-        #cv.imwrite("currentscreen.png", image)
+        if debug_enable:
+            cv.imwrite("currentscreen.png", image)
 
         return image
 
