@@ -214,8 +214,17 @@ def send_to_system(system_name):
         move_mouse_click(pos[0])
         sleep(0.5)
         wincap.saveScreenShot()
+
+        # added token systems
         pos = confirm_screen('currentscreen.png', './picture/setze_kurs.png', 0.17)
-        move_mouse_click(pos[0])
+        if pos:
+            move_mouse_click(pos[0])
+        else:
+            # is token system
+            pos = confirm_screen('currentscreen.png', './picture/setze_kurs_token.png', 0.17)
+            move_mouse_click(pos[0])
+            pos = confirm_screen('currentscreen.png', './picture/setze_kurs_token_route.png', 0.17)
+            move_mouse_click(pos[0])
     else:
         # send inner system
         move_mouse_click((800, 500))
@@ -223,6 +232,12 @@ def send_to_system(system_name):
         pos = confirm_screen('currentscreen.png', './picture/nicht_im_system.png', 0.17)
         if pos:
             move_mouse_click(pos[0], 20, 25)
+            #check token system
+            wincap.saveScreenShot()
+            pos = confirm_screen('currentscreen.png', './picture/setze_kurs_token_route.png', 0.17)
+            if pos:
+                move_mouse_click(pos[0])
+
         else:
             #new click
             move_mouse_click((820, 490))
@@ -232,6 +247,8 @@ def send_to_system(system_name):
             else:
                 return
 
+
+
 """*********************************************************************
 *! \fn          def get_target(target_list)
 *  \brief       find target
@@ -240,48 +257,55 @@ def send_to_system(system_name):
 *  \return      none
 *********************************************************************"""
 def attack_target(target_list):
+    #move_mouse_click(1000,500)
     pyautogui.scroll(+10)  # scroll up 10 "clicks"
+    hostile_image = []
+    closed_target_pos = 0
+    result = 0
+    result_locs = list()
     current_screen_image = wincap.saveScreenShot()
-    if target_list == 1:
+    if target_list[0] > 0:
         #battleships
         hostile_image = cv.imread('./picture/hostiles/battleship.png', cv.IMREAD_COLOR)
-    elif target_list == 2:
-        hostile_image = cv.imread('./picture/hostiles/interceptor.png', cv.IMREAD_COLOR)
-    else:
-        return
-    result = cv.matchTemplate(current_screen_image, hostile_image, cv.TM_SQDIFF_NORMED)
-    threshold = 0.1
+        result = cv.matchTemplate(current_screen_image, hostile_image, cv.TM_SQDIFF_NORMED)
+        threshold = 0.1
+        locations = np.where(result <= threshold)
+        result_locs += list((zip(*locations[::-1])))
+    if target_list[1] > 0:
+        #interceptor
+        hostile_image =  cv.imread('./picture/hostiles/interceptor.png', cv.IMREAD_COLOR)
+        result = cv.matchTemplate(current_screen_image, hostile_image, cv.TM_SQDIFF_NORMED)
+        threshold = 0.1
+        locations = np.where(result <= threshold)
+        result_locs += list((zip(*locations[::-1])))
+    if target_list[2] > 0:
+        #science
+        hostile_image = cv.imread('./picture/hostiles/science.png', cv.IMREAD_COLOR)
+        result = cv.matchTemplate(current_screen_image, hostile_image, cv.TM_SQDIFF_NORMED)
+        threshold = 0.1
+        locations = np.where(result <= threshold)
+        result_locs += list((zip(*locations[::-1])))
+    if target_list[3] > 0:
+        #miner
+        hostile_image = cv.imread('./picture/hostiles/miner.png', cv.IMREAD_COLOR)
+        result = cv.matchTemplate(current_screen_image, hostile_image, cv.TM_SQDIFF_NORMED)
+        threshold = 0.1
+        locations = np.where(result <= threshold)
+        result_locs += list((zip(*locations[::-1])))
+
+    #result = cv.matchTemplate(current_screen_image, hostile_image, cv.TM_SQDIFF_NORMED)
+    ##threshold = 0.1
     # The np.where() return value will look like this:
     # (array([482, 483, 483, 483, 484], dtype=int32), array([514, 513, 514, 515, 514], dtype=int32))
-    locations = np.where(result <= threshold)
+    ##locations = np.where(result <= threshold)
     # We can zip those up into a list of (x, y) position tuples
-    locations = list(zip(*locations[::-1]))
-    # log.debug_msg(locations)
-    """
-    if locations:
-        log.debug_msg('hostiles needle.')
-        hostile_w = hostile_image.shape[1]
-        hostile_h = hostile_image.shape[0]
-        line_color = (0, 255, 0)
-        line_type = cv.LINE_4
-
-        # Loop over all the locations and draw their rectangle
-        for loc in locations:
-            # Determine the box positions
-            top_left = loc
-            bottom_right = (top_left[0] + hostile_w, top_left[1] + hostile_h)
-            # Draw the box
-            cv.rectangle(current_screen_image, top_left, bottom_right, line_color, line_type)
-        # sore result image
-        cv.imwrite('result.jpg', current_screen_image)
-
-    else:
-        log.debug_msg('Needle not found.')
-    """
+    ##locations = list(zip(*locations[::-1]))
+    # log.debug_msg(locations
 
     #find closed spot
-    closed_target_pos = 0
+
     loop_index = 0
+    #center ship
     ship_pos = confirm_screen("egal", './picture/ship_dock_a.png', 0.17)
     if ship_pos:
         ship_pos = confirm_screen("egal", './picture/ship_dock_a.png', 0.17)
@@ -289,16 +313,20 @@ def attack_target(target_list):
         ship_pos = [(960,540)]
     distance = 0
     # click
-    if locations:
-        distance = np.sqrt(((ship_pos[0][0] - locations[0][0]) ** 2) + ((ship_pos[0][1] - locations[0][1]) ** 2))
-        # found closed spot
-        for loc in locations:
-            if distance > np.sqrt(((ship_pos[0][0]-loc[0])**2)+((ship_pos[0][1]-loc[1])**2)):
-                distance = np.sqrt(((ship_pos[0][0]-loc[0])**2)+((ship_pos[0][1]-loc[1])**2))
-                closed_target_pos = loop_index
+    if result_locs:
+        try:
+            distance = np.sqrt(((ship_pos[0][0] - result_locs[0][0]) ** 2) + ((ship_pos[0][1] - result_locs[0][1]) ** 2))
+            # found closed spot
+            for loc in result_locs:
+                if distance > np.sqrt(((ship_pos[0][0]-loc[0])**2)+((ship_pos[0][1]-loc[1])**2)):
+                    distance = np.sqrt(((ship_pos[0][0]-loc[0])**2)+((ship_pos[0][1]-loc[1])**2))
+                    closed_target_pos = loop_index
             loop_index = loop_index + 1
-        target_pos = locations[closed_target_pos]
-        move_mouse(target_pos)
+            target_pos = result_locs[closed_target_pos]
+            move_mouse(target_pos)
+        except:
+            log.debug_msg("no target")
+            return 0
     else:
         log.debug_msg("no target")
         return 0
@@ -315,17 +343,27 @@ def attack_target(target_list):
     # We can zip those up into a list of (x, y) position tuples
     # locations = list(zip(*locations[::-1]))
     #log.debug_msg(locations)
-
-    if target_list == 1:
+    confirm_path = './picture/hostiles/empty.png'
+    if target_list[0] > 0:
         #battleships
-        confirm_path = './picture/hostiles/confirm_battleship.png'
-    elif target_list == 2:
-        #battleships
-        confirm_path = './picture/hostiles/confirm_interceptor.png'
+        if confirm_screen('currentscreen.png', './picture/hostiles/confirm_battleship.png', 0.17):
+            confirm_path = './picture/hostiles/confirm_battleship.png'
+    elif target_list[1] > 0:
+        #interceptor
+        if confirm_screen('currentscreen.png', './picture/hostiles/confirm_interceptor.png', 0.17):
+            confirm_path = './picture/hostiles/confirm_interceptor.png'
+    elif target_list[2] > 0:
+        #science
+        if confirm_screen('currentscreen.png', './picture/hostiles/confirm_science.png', 0.17):
+            confirm_path = './picture/hostiles/confirm_science.png'
+    elif target_list[3] > 0:
+        #miners
+        if confirm_screen('currentscreen.png', './picture/hostiles/confirm_miner.png', 0.17):
+            confirm_path = './picture/hostiles/confirm_miner.png'
     else:
         return 0
     #wincap.saveScreenShot()
-    if confirm_screen('currentscreen.png', confirm_path, 0.17):
+    if confirm_screen('currentscreen.png', confirm_path, 0.17) :
 
         # check if ship in region
         current_screen_image = wincap.saveScreenShot()

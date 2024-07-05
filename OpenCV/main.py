@@ -30,6 +30,8 @@ pos_repair_screen_btn = (1200,540)
 
 pos_battle_screen_btn = (1860,850)
 
+dummy = 0
+
 """*********************************************************************
                 local val
 *********************************************************************"""
@@ -39,12 +41,14 @@ target_count = 0
 enable_battle_screen = 0
 #0 = until full cargo
 num_of_targets = 0
-target_system = "Avofall"
+#target_system = "beta-sektor"
+target_system = "gamma sedra"
 #1 battleship
 #2 int
 #3 science
 #4 miner
-target_class = 2
+#target_class = [0,1,1,0]
+target_class = [0,0,1,0]
 """*********************************************************************
 *! \fn          move_mouse(target_pos)
 *  \brief       set mouse to posotion and click
@@ -82,6 +86,11 @@ __name__ == '__main__'
 # Doing this because I'll be putting the files from each video in their own folder on GitHub
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+#list add
+list1 = ([0,1],[2,3])
+list2 = ([4,5],[6,7])
+
+list1 += list2
 
 # initialize the Vision class
 wincap = WindowCapture('Star Trek Fleet Command')
@@ -113,6 +122,10 @@ while(True):
             log.debug_msg("select ship")
             move_mouse(pos_dock1_no_chat)
             sleep(0.5)
+            if state_machine.confirm_screen('currentscreen.png', './picture/schiff_verwaltung.png', 0.17):
+                dummy = 0
+            else:
+                move_mouse(pos_dock1_no_chat)
             move_mouse(pos_location_btn_no_chat)
             next_state = "send_system"
         case "send_system":
