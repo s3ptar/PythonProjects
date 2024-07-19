@@ -37,7 +37,7 @@ import debug_logging as log
 * Global Variable
 *********************************************************************"""
 wincap = WindowCapture('Star Trek Fleet Command')
-
+last_target_pos = 0
 """*********************************************************************
 * local Variable
 *********************************************************************"""
@@ -315,13 +315,17 @@ def attack_target(target_list):
     # click
     if result_locs:
         try:
-            distance = np.sqrt(((ship_pos[0][0] - result_locs[0][0]) ** 2) + ((ship_pos[0][1] - result_locs[0][1]) ** 2))
+            distance = np.sqrt((np.square(ship_pos[0][0] - result_locs[0][0])) +
+                               (np.square(ship_pos[0][1] - result_locs[0][1])))
             # found closed spot
             for loc in result_locs:
-                if distance > np.sqrt(((ship_pos[0][0]-loc[0])**2)+((ship_pos[0][1]-loc[1])**2)):
-                    distance = np.sqrt(((ship_pos[0][0]-loc[0])**2)+((ship_pos[0][1]-loc[1])**2))
+                next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
+                                      (np.square(ship_pos[0][1] - loc[1])))
+                loop_index = loop_index + 1
+                if distance > next_target:
+                    distance = next_target
                     closed_target_pos = loop_index
-            loop_index = loop_index + 1
+
             target_pos = result_locs[closed_target_pos]
             move_mouse(target_pos)
         except:

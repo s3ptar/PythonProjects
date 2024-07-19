@@ -47,8 +47,8 @@ target_system = "gamma sedra"
 #2 int
 #3 science
 #4 miner
-#target_class = [0,1,1,0]
 target_class = [0,0,1,0]
+#target_class = [0,0,1,0]
 """*********************************************************************
 *! \fn          move_mouse(target_pos)
 *  \brief       set mouse to posotion and click
@@ -85,12 +85,6 @@ __name__ == '__main__'
 # Change the working directory to the folder this script is in.
 # Doing this because I'll be putting the files from each video in their own folder on GitHub
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-#list add
-list1 = ([0,1],[2,3])
-list2 = ([4,5],[6,7])
-
-list1 += list2
 
 # initialize the Vision class
 wincap = WindowCapture('Star Trek Fleet Command')
