@@ -42,12 +42,12 @@ enable_battle_screen = 0
 #0 = until full cargo
 num_of_targets = 0
 #target_system = "beta-sektor"
-target_system = "gamma sedra"
+target_system = "neara"
 #1 battleship
 #2 int
 #3 science
 #4 miner
-target_class = [0,0,1,0]
+target_class = [1,1,1,1]
 #target_class = [0,0,1,0]
 """*********************************************************************
 *! \fn          move_mouse(target_pos)
@@ -129,7 +129,7 @@ while(True):
             next_state = "wait_for_arrive"
         case "wait_for_arrive":
             #wincap.saveRegion(region_dock1_no_chat)
-            pos = state_machine.confirm_region('currentregion.png', './picture/ship_idle.png', 0.17, region_dock1_no_chat)
+            pos = state_machine.confirm_region('currentregion.png', './picture/ship_idle.png', 0.17, region_dock1_no_chat )
             if (pos):
                 log.debug_msg("schiff angekommen")
                 next_state = "center_ship"

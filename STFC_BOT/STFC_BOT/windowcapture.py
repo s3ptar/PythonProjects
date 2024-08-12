@@ -83,14 +83,14 @@ class WindowCapture:
         image = pyautogui.screenshot(region=(self.offset_x, self.offset_y, self.w, self.h))
         image = cv.cvtColor(np.array(image), mode)
         if debug_enable:
-            cv.imwrite("currentscreen.png", image)
+            cv.imwrite("debug\currentscreen.png", image)
 
         return image
 
     def saveRegion(self, region):
         image = pyautogui.screenshot(region=(self.offset_x+region[0], self.offset_y+region[1], region[2], region[3]))
         image = cv.cvtColor(np.array(image), cv.COLOR_RGB2BGR)
-        #cv.imwrite("currentregion.png", image)
+        cv.imwrite("debug\capture_region.png", image)
         return image
 
     # find the name of the window you're interested in.

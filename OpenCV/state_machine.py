@@ -258,12 +258,12 @@ def send_to_system(system_name):
 *********************************************************************"""
 def attack_target(target_list):
     #move_mouse_click(1000,500)
-    pyautogui.scroll(+10)  # scroll up 10 "clicks"
+    #pyautogui.scroll(+10)  # scroll up 10 "clicks"
     hostile_image = []
     closed_target_pos = 0
     result = 0
     result_locs = list()
-    current_screen_image = wincap.saveScreenShot()
+    current_screen_image = wincap.saveScreenShot(debug_enable=1)
     if target_list[0] > 0:
         #battleships
         hostile_image = cv.imread('./picture/hostiles/battleship.png', cv.IMREAD_COLOR)
@@ -306,9 +306,9 @@ def attack_target(target_list):
 
     loop_index = 0
     #center ship
-    ship_pos = confirm_screen("egal", './picture/ship_dock_a.png', 0.17)
+    ship_pos = confirm_screen("egal", './picture/ship_dock_a.png', 0.1)
     if ship_pos:
-        ship_pos = confirm_screen("egal", './picture/ship_dock_a.png', 0.17)
+        ship_pos = confirm_screen("egal", './picture/ship_dock_a.png', 0.1)
     else:
         ship_pos = [(960,540)]
     distance = 0
