@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/STFC_BOT.iml" filepath="$PROJECT_DIR$/.idea/STFC_BOT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../Axis/pythonProject/.idea/pythonProject.iml" filepath="$PROJECT_DIR$/../../Axis/pythonProject/.idea/pythonProject.iml" />
     </modules>
   </component>
 </project>

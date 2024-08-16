@@ -1,7 +1,9 @@
 import json
 import os
 import navigation
-
+import datetime
+from datetime import timedelta
+import time
 """*********************************************************************
 *! \fn          main
 *  \brief       start code
@@ -12,6 +14,7 @@ import navigation
 
 
 import json
+from time import sleep
 
 """*********************************************************************
                 Constant
@@ -24,7 +27,6 @@ pos_location_btn_no_chat = (100, 910)
 pos_recall_btn_no_chat = (100, 980)
 pos_close_chat_btn = (500,20)
 pos_repair_screen_btn = (1200,540)
-
 pos_battle_screen_btn = (1860,850)
 
 dummy = 0
@@ -36,29 +38,21 @@ current_state = "init"
 next_state = "init"
 target_count = 0
 enable_battle_screen = 0
-#0 = until full cargo
-num_of_targets = 0
-#target_system = "beta-sektor"
-target_system = ["neara"]
-#1 battleship
-#2 int
-#3 science
-#4 miner
-target_class = [1,1,1,1]
-#target_class = [0,0,1,0]
 
-
+start_time = time.time()
 
 json_config_data = """
     [{
-    "target_system" : "corvinus",
+    "target_system" : "beta-sektor",
     "target_list":[{
-        "battleship":0,
-        "interceptor":0,
+        "battleship":1,
+        "interceptor":2,
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":0
+    "num_of_target_kills":0,
+    "num_of_repeats": 2,
+    "cargo_modus_enabled":0
 }]
 """
 """*********************************************************************
@@ -68,8 +62,6 @@ json_config_data = """
 *  \exception   none
 *  \return      none
 *********************************************************************"""
-
-
 
 
 __name__ == '__main__'
@@ -86,20 +78,37 @@ print("repair")
 print("start task")
 task_data = json.loads(json_config_data)
 for task_item in task_data:
-    print("send to system " + task_item["target_system"])
-    #navigation.send_to_system(task_item["target_system"])
-    while 1:
-    #wait unitl ship arrive
+
+    repeat_loops = task_item["num_of_repeats"]
+    while repeat_loops:
+
+        print("send to system " + task_item["target_system"])
+        navigation.send_to_system(task_item["target_system"])
+        target_cnt = 0
+        fighting_mode = 1
+
         navigation.wait_unilt_ship_rdy(1)
         navigation.prepare_attacking()
-        navigation.attacking(task_item["target_list"])
+        while fighting_mode:# or not task_item['cargo_modus_enabled']:
+            #wait unitl ship arrive
+            navigation.prepare_attacking()
+            if navigation.attacking(task_item["target_list"]):
+                target_cnt += 1
+                rt_time = (time.time() - start_time)/60
+                print("Killed Target : {kills} - runtime : {rt_time_min:3.0f}min" .format(kills=target_cnt, rt_time_min=rt_time))
+                #print(f""Killed Target : {kills} - runtime : {rt_time_min} min"")
+
+            navigation.wait_unilt_ship_rdy(1)
+            fighting_mode = navigation.check_ship(1)
 
 
-# initialize the Vision class
+        sleep(4)
+        #send home
+        navigation.check_ship(1)
+        navigation.wait_unilt_ship_rdy(1)
+        navigation.repair_ship(1)
+        repeat_loops -= 1
 
 
-#wincap.saveRegion(region_dock1_no_chat)
-#move_mouse_click((1200,540))
-#sleep(200)
 
 
