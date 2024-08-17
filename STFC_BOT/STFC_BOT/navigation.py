@@ -365,6 +365,7 @@ def wait_unilt_ship_rdy(dock):
 
 
     while loop_condition:
+        select_dock(dock)
         if confirm_screen('./picture/schiff_wartet.png', 0.05):
             loop_condition = 0
             return_value = 1
@@ -402,17 +403,16 @@ def prepare_attacking():
     return
 
 """*********************************************************************
-*! \fn          attacking(target_setup)
+*! \fn          attacking(target_setup, next_target)
 *  \brief       attaking until task empty
-*  \param       none
+*  \param       target_list - list with target classes
+*  \param       next_target - default enable, if 0 jump over closed target calc
 *  \exception   none
 *  \return      none
 *********************************************************************"""
-def attacking(target_list):
+def attacking(target_list, next_target = 1):
     try:
-        hostile_image = []
-        closed_target_pos = 999999999999
-        result = 0
+        prepare_attacking()
         target_class = 0
         target_pos = 9999999999
         result_locs = list()
@@ -421,6 +421,10 @@ def attacking(target_list):
 
         #check if battle mode enabled
 
+        if next_target:
+            target_pos = 99999999999
+        else:
+            target_pos = 0
 
         ship_pos = confirm_screen('./picture/ship_dock_a.png', 0.1)
         if ship_pos:
@@ -432,92 +436,108 @@ def attacking(target_list):
 
         if target_data['battleship'] > 0:
             # battleships
-
             pos = confirm_screen('./picture/hostiles/battleship.png', 0.1, )
-            loop_index = 0
+            if next_target:
 
-            if pos:
-                """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
-                                               (np.square(ship_pos[0][1] - pos[0][1])))"""
-                # found closed spot
-                for loc in pos:
-                    next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
-                                          (np.square(ship_pos[0][1] - loc[1])))
+                loop_index = 0
 
-                    if distance > next_target:
-                        distance = next_target
-                        closed_target_pos = loop_index
-                        target_pos = pos[loop_index]
-                        target_class = "battleship"
-                    loop_index = loop_index + 1
+                if pos:
+                    """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
+                                                   (np.square(ship_pos[0][1] - pos[0][1])))"""
+                    # found closed spot
+                    for loc in pos:
+                        next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
+                                              (np.square(ship_pos[0][1] - loc[1])))
 
-
+                        if distance > next_target:
+                            distance = next_target
+                            closed_target_pos = loop_index
+                            target_pos = pos[loop_index]
+                            target_class = "battleship"
+                        loop_index = loop_index + 1
+            else:
+                target_pos = pos[0]
+                target_class = "battleship"
 
         if target_data['interceptor'] > 0:
             # interceptor
 
             pos = confirm_screen('./picture/hostiles/interceptor.png', 0.1, )
-            loop_index = 0
+            if next_target:
+                loop_index = 0
 
-            if pos:
-                """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
-                                   (np.square(ship_pos[0][1] - pos[0][1])))"""
-                # found closed spot
-                for loc in pos:
-                    next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
-                                          (np.square(ship_pos[0][1] - loc[1])))
+                if pos:
+                    """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
+                                       (np.square(ship_pos[0][1] - pos[0][1])))"""
+                    # found closed spot
+                    for loc in pos:
+                        next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
+                                              (np.square(ship_pos[0][1] - loc[1])))
 
-                    if distance > next_target:
-                        distance = next_target
-                        closed_target_pos = loop_index
-                        target_pos = pos[loop_index]
-                        target_class = "interceptor"
-                    loop_index = loop_index + 1
+                        if distance > next_target:
+                            distance = next_target
+                            closed_target_pos = loop_index
+                            target_pos = pos[loop_index]
+                            target_class = "interceptor"
+                        loop_index = loop_index + 1
+            else:
+                if not target_pos:
+                    target_pos = pos[0]
+                    target_class = "interceptor"
 
         if target_data['explorer'] > 0:
             # science
             pos = confirm_screen('./picture/hostiles/science.png', 0.1, )
-            loop_index = 0
+            if next_target:
+                loop_index = 0
 
-            if pos:
-                """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
-                                   (np.square(ship_pos[0][1] - pos[0][1])))"""
-                # found closed spot
-                for loc in pos:
-                    next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
-                                          (np.square(ship_pos[0][1] - loc[1])))
+                if pos:
+                    """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
+                                       (np.square(ship_pos[0][1] - pos[0][1])))"""
+                    # found closed spot
+                    for loc in pos:
+                        next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
+                                              (np.square(ship_pos[0][1] - loc[1])))
 
-                    if distance > next_target:
-                        distance = next_target
-                        closed_target_pos = loop_index
-                        target_pos = pos[loop_index]
+                        if distance > next_target:
+                            distance = next_target
+                            closed_target_pos = loop_index
+                            target_pos = pos[loop_index]
+                            target_class = "science"
+                        loop_index = loop_index + 1
+                else:
+                    if not target_pos:
+                        target_pos = pos[0]
                         target_class = "science"
-                    loop_index = loop_index + 1
 
                 #move_mouse_position(target_pos,-20)
 
         if target_data['miner'] > 0:
             # miner
             pos = confirm_screen('./picture/hostiles/miner.png', 0.1, )
-            loop_index = 0
-            if pos:
-                """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
-                                               (np.square(ship_pos[0][1] - pos[0][1])))"""
-                # found closed spot
-                for loc in pos:
-                    next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
-                                          (np.square(ship_pos[0][1] - loc[1])))
+            if next_target:
+                loop_index = 0
+                if pos:
+                    """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
+                                                   (np.square(ship_pos[0][1] - pos[0][1])))"""
+                    # found closed spot
+                    for loc in pos:
+                        next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
+                                              (np.square(ship_pos[0][1] - loc[1])))
 
-                    if distance > next_target:
-                        distance = next_target
-                        target_pos = pos[loop_index]
-                        target_class = "miner"
-                    loop_index = loop_index + 1
-
+                        if distance > next_target:
+                            distance = next_target
+                            target_pos = pos[loop_index]
+                            target_class = "miner"
+                        loop_index = loop_index + 1
+            else:
+                if not target_pos:
+                    target_pos = pos[0]
+                    target_class = "miner"
 
         #select target
         if target_pos:
-            move_mouse_position(target_pos, -30)
+            move_mouse_position(target_pos, -35, +3)
         else:
             return 0
         if target_class == "battleship":

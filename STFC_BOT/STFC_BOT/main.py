@@ -12,7 +12,7 @@ import time
 *  \return      none
 *********************************************************************"""
 
-
+from pywinauto import keyboard
 import json
 from time import sleep
 
@@ -42,18 +42,47 @@ enable_battle_screen = 0
 start_time = time.time()
 
 json_config_data = """
-    [{
-    "target_system" : "beta-sektor",
+    [
+    {
+    "target_system" : "Temminck",
     "target_list":[{
-        "battleship":1,
-        "interceptor":2,
+        "battleship":0,
+        "interceptor":1,
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":0,
-    "num_of_repeats": 2,
+    "num_of_target_kills":30,
+    "num_of_repeats": 1,
+    "closed_kill_enable":0,
     "cargo_modus_enabled":0
-}]
+},
+{
+    "target_system" : "axo'tae",
+    "target_list":[{
+        "battleship":0,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":1,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+},
+{
+    "target_system" : "santheis",
+    "target_list":[{
+        "battleship":0,
+        "interceptor":0,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":25,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
 """
 """*********************************************************************
 *! \fn          move_mouse(target_pos)
@@ -88,11 +117,11 @@ for task_item in task_data:
         fighting_mode = 1
 
         navigation.wait_unilt_ship_rdy(1)
-        navigation.prepare_attacking()
+        #navigation.prepare_attacking()
         while fighting_mode:# or not task_item['cargo_modus_enabled']:
             #wait unitl ship arrive
             navigation.prepare_attacking()
-            if navigation.attacking(task_item["target_list"]):
+            if navigation.attacking(task_item["target_list"], task_item["closed_kill_enable"]):
                 target_cnt += 1
                 rt_time = (time.time() - start_time)/60
                 print("Killed Target : {kills} - runtime : {rt_time_min:3.0f}min" .format(kills=target_cnt, rt_time_min=rt_time))
@@ -100,6 +129,10 @@ for task_item in task_data:
 
             navigation.wait_unilt_ship_rdy(1)
             fighting_mode = navigation.check_ship(1)
+            #check it target count reached
+            if (target_cnt >= task_item["num_of_target_kills"]):
+                fighting_mode = 0
+                keyboard.send_keys('%m')
 
 
         sleep(4)
