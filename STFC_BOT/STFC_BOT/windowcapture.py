@@ -26,6 +26,7 @@ class WindowCapture:
         #win32gui.MoveWindow(self.hwnd,0,0,1920,1080, 1)
         # get the window size
         window_rect = win32gui.GetWindowRect(self.hwnd)
+        window_rect = [0,0,1920,1080]
         self.w = window_rect[2] - window_rect[0]
         self.h = window_rect[3] - window_rect[1]
 

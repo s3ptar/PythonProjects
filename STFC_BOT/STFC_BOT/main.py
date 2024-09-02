@@ -38,10 +38,37 @@ current_state = "init"
 next_state = "init"
 target_count = 0
 enable_battle_screen = 0
+no_target_cnt = 0
 
 start_time = time.time()
 
-json_config_data = """
+
+"""*********************************************************************
+                mantis
+*********************************************************************"""
+json_config_data_mantis = """
+    [
+    {
+    "target_system" : "yunke",
+    "target_list":[{
+        "battleship":0,
+        "interceptor":1,
+        "explorer":0,
+        "miner":0
+    }],
+    "num_of_target_kills":1,
+    "num_of_repeats": 4,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
+"""
+
+"""*********************************************************************
+                dailys
+                
+*********************************************************************"""
+json_config_data_2 = """
     [
     {
     "target_system" : "Temminck",
@@ -51,7 +78,7 @@ json_config_data = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":30,
+    "num_of_target_kills":35,
     "num_of_repeats": 1,
     "closed_kill_enable":0,
     "cargo_modus_enabled":0
@@ -64,7 +91,56 @@ json_config_data = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":1,
+    "num_of_target_kills":10,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
+"""
+json_config_data_sent = """
+    [
+    
+{
+    "target_system" : "santheis",
+    "target_list":[{
+        "battleship":0,
+        "interceptor":0,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":100,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
+"""
+
+json_config_data = """
+    [
+    {
+    "target_system" : "Temminck",
+    "target_list":[{
+        "battleship":0,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":35,
+    "num_of_repeats": 1,
+    "closed_kill_enable":0,
+    "cargo_modus_enabled":0
+},
+{
+    "target_system" : "axo'tae",
+    "target_list":[{
+        "battleship":0,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":10,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":0
@@ -79,6 +155,45 @@ json_config_data = """
     }],
     "num_of_target_kills":25,
     "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
+"""
+"""*********************************************************************
+                borg
+*********************************************************************"""
+json_config_data_borg = """
+    [{
+    "target_system" : "solus ynestri", 
+    "target_list":[{
+        "battleship":1,
+        "interceptor":0,
+        "explorer":0,
+        "miner":0
+    }],
+    "num_of_target_kills":999999,
+    "num_of_repeats": 2,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
+"""
+
+"""*********************************************************************
+                beta sector
+*********************************************************************"""
+json_config_data_beta = """
+    [{
+    "target_system" : "beta-sektor", 
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":999999,
+    "num_of_repeats": 4,
     "closed_kill_enable":1,
     "cargo_modus_enabled":0
 }
@@ -120,17 +235,25 @@ for task_item in task_data:
         #navigation.prepare_attacking()
         while fighting_mode:# or not task_item['cargo_modus_enabled']:
             #wait unitl ship arrive
-            navigation.prepare_attacking()
+            #navigation.prepare_attacking()
             if navigation.attacking(task_item["target_list"], task_item["closed_kill_enable"]):
                 target_cnt += 1
+                no_target_cnt = 0
                 rt_time = (time.time() - start_time)/60
                 print("Killed Target : {kills} - runtime : {rt_time_min:3.0f}min" .format(kills=target_cnt, rt_time_min=rt_time))
                 #print(f""Killed Target : {kills} - runtime : {rt_time_min} min"")
+            else:
+                no_target_cnt += 1
+                # mehr als 5 fehlverscuhe nacheinander, shiff im system zerntrieren
+                if no_target_cnt > 5:
+                    navigation.send_to_system(task_item["target_system"])
+                    no_target_cnt = 0
+
 
             navigation.wait_unilt_ship_rdy(1)
             fighting_mode = navigation.check_ship(1)
             #check it target count reached
-            if (target_cnt >= task_item["num_of_target_kills"]):
+            if ( (target_cnt >= task_item["num_of_target_kills"]) ):
                 fighting_mode = 0
                 keyboard.send_keys('%m')
 

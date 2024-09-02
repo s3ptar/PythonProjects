@@ -284,6 +284,9 @@ def repair_ship(dock):
             move_mouse_position(repair_speed_up_pos)
             sleep(1)
             pos = confirm_screen("./picture/gratis_repair.png", 0.1)
+
+            #if not pos:
+            #    pos = confirm_screen("./picture/repair_done.png", 0.1)
         move_mouse_position(pos[0])
     print("repair done")
 
@@ -310,6 +313,7 @@ def send_to_system(system_name):
     move_mouse_position((943, 132))
     sleep(0.5)
     pyautogui.write(system_name)
+    sleep(3)
     system_path = './picture/systems/' + system_name + '.png'
     system_path = system_path.replace(" ", "_")
     pos = confirm_screen(system_path, 0.01)
@@ -318,6 +322,7 @@ def send_to_system(system_name):
     # click los button
     move_mouse_position((1001,1007))
     sleep(0.5)
+    #check if tiken
 
     #scroll down
     pyautogui.scroll(+8000)  # scroll out
