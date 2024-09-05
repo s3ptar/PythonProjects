@@ -117,7 +117,7 @@ json_config_data_sent = """
 ]
 """
 
-json_config_data = """
+json_config_data_dailiy = """
     [
     {
     "target_system" : "Temminck",
@@ -129,7 +129,7 @@ json_config_data = """
     }],
     "num_of_target_kills":35,
     "num_of_repeats": 1,
-    "closed_kill_enable":0,
+    "closed_kill_enable":1,
     "cargo_modus_enabled":0
 },
 {
@@ -199,6 +199,26 @@ json_config_data_beta = """
 }
 ]
 """
+
+
+
+json_config_data = """
+    [
+    {
+    "target_system" : "mullins",
+    "target_list":[{
+        "battleship":1,
+        "interceptor":0,
+        "explorer":0,
+        "miner":0
+    }],
+    "num_of_target_kills":35,
+    "num_of_repeats": 2,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
+"""
 """*********************************************************************
 *! \fn          move_mouse(target_pos)
 *  \brief       set mouse to posotion and click
@@ -217,53 +237,97 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 print("chat close")
 #navigation.close_chat_window()
 print("repair")
-#navigation.repair_ship()
+#navigation.repair_ship(1)
+
+
 
 print("start task")
 task_data = json.loads(json_config_data)
 for task_item in task_data:
 
+    current_state = "send_to_system"
+    next_state = "send_to_system"
+    target_cnt = 0
+
     repeat_loops = task_item["num_of_repeats"]
     while repeat_loops:
+        sleep(2)
+        current_state = next_state
+        if current_state == "send_to_system":
+            print("send to system " + task_item["target_system"])
+            return_val = navigation.send_to_system(task_item["target_system"], 1)
+            fighting_mode = 1
+            if return_val:
+                next_state = "wait_for_ship_arrive_system"
+                threshold = 0.12
 
-        print("send to system " + task_item["target_system"])
-        navigation.send_to_system(task_item["target_system"])
-        target_cnt = 0
-        fighting_mode = 1
+        if current_state == "wait_for_ship_arrive_system":
+            return_val = navigation.wait_unilt_ship_rdy(1)
+            if return_val:
+                next_state = "attack_targets"
+                #reset miss clicks
+                no_target_cnt = 0
+                threshold = 0.12
 
-        navigation.wait_unilt_ship_rdy(1)
-        #navigation.prepare_attacking()
-        while fighting_mode:# or not task_item['cargo_modus_enabled']:
-            #wait unitl ship arrive
+
+        if current_state == "attack_targets":
             #navigation.prepare_attacking()
             if navigation.attacking(task_item["target_list"], task_item["closed_kill_enable"]):
                 target_cnt += 1
-                no_target_cnt = 0
-                rt_time = (time.time() - start_time)/60
-                print("Killed Target : {kills} - runtime : {rt_time_min:3.0f}min" .format(kills=target_cnt, rt_time_min=rt_time))
-                #print(f""Killed Target : {kills} - runtime : {rt_time_min} min"")
+                next_state = "wait_for_ship_finish_attack"
+                rt_time = (time.time() - start_time) / 60
+                print("Killed Target : {kills} - runtime : {rt_time_min:3.0f}min".format(kills=target_cnt,
+                                                                                         rt_time_min=rt_time))
             else:
                 no_target_cnt += 1
-                # mehr als 5 fehlverscuhe nacheinander, shiff im system zerntrieren
+                threshold = threshold + 0.1
+                print(f'no target, threshold = {threshold}')
                 if no_target_cnt > 5:
-                    navigation.send_to_system(task_item["target_system"])
+                    #zuviele fehlverscuhe, center ship
+                    next_state = "send_to_system"
+
+
+            """while fighting_mode:# or not task_item['cargo_modus_enabled']:
+                #wait unitl ship arrive
+                #navigation.prepare_attacking()
+                if navigation.attacking(task_item["target_list"], task_item["closed_kill_enable"]):
+                    target_cnt += 1
                     no_target_cnt = 0
+                    rt_time = (time.time() - start_time)/60
+                    print("Killed Target : {kills} - runtime : {rt_time_min:3.0f}min" .format(kills=target_cnt, rt_time_min=rt_time))
+                    #print(f""Killed Target : {kills} - runtime : {rt_time_min} min"")
+                else:
+                    no_target_cnt += 1
+                    # mehr als 5 fehlverscuhe nacheinander, shiff im system zerntrieren
+                    if no_target_cnt > 5:
+                        navigation.send_to_system(task_item["target_system"])
+                        no_target_cnt = 0"""
+
+        if current_state == "wait_for_ship_finish_attack":
+            return_val = navigation.wait_unilt_ship_rdy(1)
+            if return_val:
+                if ((target_cnt >= task_item["num_of_target_kills"])):
+                    #send ship home
+                    keyboard.send_keys('%m')
+                    next_state = "send_ship_home"
+                elif navigation.check_ship(1):
+                    next_state = "send_ship_home"
+                else:
+                    next_state = "attack_targets"
+
+        if current_state == "send_ship_home":
+            return_val = navigation.wait_unilt_ship_rdy(1)
+            if return_val:
+                next_state = "repair_ship"
+            sleep(4)
+
+        if current_state == "repair_ship":
+            navigation.repair_ship(1)
+            repeat_loops -= 1
 
 
-            navigation.wait_unilt_ship_rdy(1)
-            fighting_mode = navigation.check_ship(1)
-            #check it target count reached
-            if ( (target_cnt >= task_item["num_of_target_kills"]) ):
-                fighting_mode = 0
-                keyboard.send_keys('%m')
 
 
-        sleep(4)
-        #send home
-        navigation.check_ship(1)
-        navigation.wait_unilt_ship_rdy(1)
-        navigation.repair_ship(1)
-        repeat_loops -= 1
 
 
 

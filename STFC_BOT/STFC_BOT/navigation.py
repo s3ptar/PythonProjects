@@ -42,6 +42,7 @@ systemname_field_pos = (800,100)
 pos_location_btn_no_chat = (100, 910)
 pos_attack_btn_no_chat = (1300, 600)
 region_dock1_no_chat = (670,910,90,110)
+region_ship_number = (60,640, 150,100)
 """"*********************************************************************
 * Global Variable
 *********************************************************************"""
@@ -216,12 +217,14 @@ def nav_send_short_cut(target, cmd):
 def select_dock(dock_num):
     move_mouse(mouse_pos_top)
     if dock_num == 1:
-        keyboard.send_keys('%1')
-    sleep(delay_click)
-    if confirm_region("./picture/allianz_btn_logo.png", 0.1, region_allianz_btn,1):
-        #check if ship menu open, if not send another cmd
-        if dock_num == 1:
+        #chec if ship a is select
+        if not confirm_region("./picture/schiff_A.png", 0.1, region_ship_number, 1):
             keyboard.send_keys('%1')
+    sleep(delay_click)
+    #if confirm_region("./picture/allianz_btn_logo.png", 0.1, region_allianz_btn,1):
+    #    #check if ship menu open, if not send another cmd
+    #    if dock_num == 1:
+    #        keyboard.send_keys('%1')
 
 """*********************************************************************
 *! \fn          select_dock(dock_num):
@@ -252,7 +255,7 @@ def repair_ship(dock):
     move_mouse(mouse_pos_top)
     #hit repair button if exists
     print ("check repair")
-    pos = confirm_screen("./picture/repair_btn.png", 0.1)
+    pos = confirm_screen("./picture/dock_state_repair_btn.png", 0.1)
     if pos:
         move_mouse_position(pos[0])
         repair_need = 1
@@ -284,6 +287,10 @@ def repair_ship(dock):
             move_mouse_position(repair_speed_up_pos)
             sleep(1)
             pos = confirm_screen("./picture/gratis_repair.png", 0.1)
+            if not pos:
+                pos = confirm_screen("./picture/repair_done.png", 0.1)
+
+
 
             #if not pos:
             #    pos = confirm_screen("./picture/repair_done.png", 0.1)
@@ -299,7 +306,7 @@ def repair_ship(dock):
 *  \exception   none
 *  \return      none
 *********************************************************************"""
-def send_to_system(system_name):
+def send_to_system(system_name, dock):
 
     #bookmark
     move_mouse_position((1826,878))
@@ -343,6 +350,7 @@ def send_to_system(system_name):
         pos = confirm_screen('./picture/setze_kurs_token_route.png', 0.17)
         if pos:
             move_mouse_position(pos[0])
+        return 1
 
     else:
         # new click
@@ -350,7 +358,7 @@ def send_to_system(system_name):
         pos = confirm_screen( './picture/nicht_im_system.png', 0.17)
         if pos:
             move_mouse_position(pos[0])
-            return 0
+            return 1
         else:
             return 1
 
@@ -368,25 +376,22 @@ def wait_unilt_ship_rdy(dock):
     loop_condition = 1
     return_value = 0
 
-
-    while loop_condition:
-        select_dock(dock)
-        if confirm_screen('./picture/schiff_wartet.png', 0.05):
-            loop_condition = 0
-            return_value = 1
-        if confirm_screen('./picture/repair_need.png', 0.05):
-            loop_condition = 0
-            return_value = 2
-        if confirm_screen('./picture/destroyed.png', 0.05):
-            loop_condition = 0
-            return_value = 3
-        sleep(1)
+    if confirm_screen('./picture/dock_state_schiff_wartet.png', 0.05):
+        loop_condition = 0
+        return_value = 1
+    if confirm_screen('./picture/dock_state_repair_btn.png', 0.05):
+        loop_condition = 0
+        return_value = 2
+    if confirm_screen('./picture/dock_state_destroyed.png', 0.05):
+        loop_condition = 0
+        return_value = 3
+    sleep(1)
 
     #Dock 1 abwählen
-    keyboard.send_keys('%1')
+    #keyboard.send_keys('%1')
     #center schiff
-    keyboard.send_keys('{SPACE}')
-    keyboard.send_keys('%')
+    #keyboard.send_keys('{SPACE}')
+    #keyboard.send_keys('%')
     #print("schiff stop moving")
     return return_value
 
@@ -401,7 +406,8 @@ def prepare_attacking():
     pos = confirm_screen('./picture/battlescrren.png', 0.07)
     #battle screen aktivieren falls nicht schon aktiviert
     if pos:
-        move_mouse_position(pos[0])
+        move_mouse_position((1878,855))
+        #keyboard.send_keys('%shift')
     move_mouse_position((224,202))
     sleep(1)
     pyautogui.scroll(-8000)  # scroll out
@@ -415,7 +421,7 @@ def prepare_attacking():
 *  \exception   none
 *  \return      none
 *********************************************************************"""
-def attacking(target_list, next_target = 1):
+def attacking(target_list, next_target = 1, threshold = 0.1):
     try:
         prepare_attacking()
         target_class = 0
@@ -441,7 +447,7 @@ def attacking(target_list, next_target = 1):
 
         if target_data['battleship'] > 0:
             # battleships
-            pos = confirm_screen('./picture/hostiles/battleship.png', 0.1, )
+            pos = confirm_screen('./picture/hostiles/battleship.png', threshold, )
             if next_target:
 
                 loop_index = 0
@@ -461,13 +467,14 @@ def attacking(target_list, next_target = 1):
                             target_class = "battleship"
                         loop_index = loop_index + 1
             else:
-                target_pos = pos[0]
-                target_class = "battleship"
+                if not target_pos and pos:
+                    target_pos = pos[0]
+                    target_class = "battleship"
 
         if target_data['interceptor'] > 0:
             # interceptor
 
-            pos = confirm_screen('./picture/hostiles/interceptor.png', 0.1, )
+            pos = confirm_screen('./picture/hostiles/interceptor.png', threshold, )
             if next_target:
                 loop_index = 0
 
@@ -486,13 +493,13 @@ def attacking(target_list, next_target = 1):
                             target_class = "interceptor"
                         loop_index = loop_index + 1
             else:
-                if not target_pos:
+                if not target_pos and pos:
                     target_pos = pos[0]
                     target_class = "interceptor"
 
         if target_data['explorer'] > 0:
             # science
-            pos = confirm_screen('./picture/hostiles/science.png', 0.1, )
+            pos = confirm_screen('./picture/hostiles/science.png', threshold )
             if next_target:
                 loop_index = 0
 
@@ -519,7 +526,7 @@ def attacking(target_list, next_target = 1):
 
         if target_data['miner'] > 0:
             # miner
-            pos = confirm_screen('./picture/hostiles/miner.png', 0.1, )
+            pos = confirm_screen('./picture/hostiles/miner.png', threshold)
             if next_target:
                 loop_index = 0
                 if pos:
@@ -536,7 +543,7 @@ def attacking(target_list, next_target = 1):
                             target_class = "miner"
                         loop_index = loop_index + 1
             else:
-                if not target_pos:
+                if not target_pos and pos:
                     target_pos = pos[0]
                     target_class = "miner"
 
@@ -579,6 +586,6 @@ def check_ship(dock):
     if pos:
         # send home
         keyboard.send_keys('%m')
-        return 0
-    else:
         return 1
+    else:
+        return 0
