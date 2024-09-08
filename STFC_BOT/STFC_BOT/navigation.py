@@ -323,7 +323,7 @@ def send_to_system(system_name, dock):
     sleep(3)
     system_path = './picture/systems/' + system_name + '.png'
     system_path = system_path.replace(" ", "_")
-    pos = confirm_screen(system_path, 0.01)
+    pos = confirm_screen(system_path, 0.1)
     move_mouse_position(pos[0])
     sleep(0.5)
     # click los button
@@ -570,7 +570,7 @@ def attacking(target_list, next_target = 1, threshold = 0.1):
             move_mouse_position((1287,635))
             return 1
     except:
-        print("An exception occurred in attacking")
+        #print("An exception occurred in attacking")
         return 0
 
 

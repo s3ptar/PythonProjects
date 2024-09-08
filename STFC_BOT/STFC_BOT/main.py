@@ -15,7 +15,9 @@ import time
 from pywinauto import keyboard
 import json
 from time import sleep
-
+from pynput import keyboard
+from threading import Thread
+import threading
 """*********************************************************************
                 Constant
 *********************************************************************"""
@@ -39,9 +41,8 @@ next_state = "init"
 target_count = 0
 enable_battle_screen = 0
 no_target_cnt = 0
-
 start_time = time.time()
-
+user_interaction = threading.Semaphore(1)
 
 """*********************************************************************
                 mantis
@@ -68,56 +69,8 @@ json_config_data_mantis = """
                 dailys
                 
 *********************************************************************"""
-json_config_data_2 = """
-    [
-    {
-    "target_system" : "Temminck",
-    "target_list":[{
-        "battleship":0,
-        "interceptor":1,
-        "explorer":1,
-        "miner":0
-    }],
-    "num_of_target_kills":35,
-    "num_of_repeats": 1,
-    "closed_kill_enable":0,
-    "cargo_modus_enabled":0
-},
-{
-    "target_system" : "axo'tae",
-    "target_list":[{
-        "battleship":0,
-        "interceptor":1,
-        "explorer":1,
-        "miner":0
-    }],
-    "num_of_target_kills":10,
-    "num_of_repeats": 1,
-    "closed_kill_enable":1,
-    "cargo_modus_enabled":0
-}
-]
-"""
-json_config_data_sent = """
-    [
-    
-{
-    "target_system" : "santheis",
-    "target_list":[{
-        "battleship":0,
-        "interceptor":0,
-        "explorer":1,
-        "miner":0
-    }],
-    "num_of_target_kills":100,
-    "num_of_repeats": 1,
-    "closed_kill_enable":1,
-    "cargo_modus_enabled":0
-}
-]
-"""
 
-json_config_data_dailiy = """
+json_config_data2 = """
     [
     {
     "target_system" : "Temminck",
@@ -127,7 +80,7 @@ json_config_data_dailiy = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":35,
+    "num_of_target_kills":25,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":0
@@ -160,6 +113,8 @@ json_config_data_dailiy = """
 }
 ]
 """
+
+
 """*********************************************************************
                 borg
 *********************************************************************"""
@@ -172,7 +127,27 @@ json_config_data_borg = """
         "explorer":0,
         "miner":0
     }],
-    "num_of_target_kills":999999,
+    "num_of_target_kills":999999,    
+    "num_of_repeats": 2,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
+"""
+
+"""*********************************************************************
+                borg
+*********************************************************************"""
+json_config_data_beta = """
+    [{
+    "target_system" : "beta-sektor", 
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":999999,    
     "num_of_repeats": 2,
     "closed_kill_enable":1,
     "cargo_modus_enabled":0
@@ -183,7 +158,7 @@ json_config_data_borg = """
 """*********************************************************************
                 beta sector
 *********************************************************************"""
-json_config_data_beta = """
+json_config_data = """
     [{
     "target_system" : "beta-sektor", 
     "target_list":[{
@@ -202,7 +177,7 @@ json_config_data_beta = """
 
 
 
-json_config_data = """
+json_config_data22 = """
     [
     {
     "target_system" : "mullins",
@@ -219,16 +194,54 @@ json_config_data = """
 }
 ]
 """
+
+
 """*********************************************************************
-*! \fn          move_mouse(target_pos)
-*  \brief       set mouse to posotion and click
+*! \fn          def on_press(key, abortKey='ctrl_l')
+*  \brief       wait for user interrupt to pause the code
 *  \param       none
 *  \exception   none
 *  \return      none
 *********************************************************************"""
+def on_press(key, abortKey='ctrl_l'):
+    user_interrupt = 1
+    try:
+        k = key.char  # single-char keys
+    except:
+        k = key.name  # other keys
+
+    #print('pressed %s' % (k))
+    if k == abortKey:
+        #print('end loop ...')
+        if user_interaction._value:
+            user_interaction.acquire()
+        else:
+            user_interaction.release()
+
+
+
+def loop_fun():
+    while True:
+        if user_interaction._value:
+            print('not sleeping')
+        else:
+            print('sleeping')
+
+        sleep(5)
+
+
 
 
 __name__ == '__main__'
+
+
+abortKey = 'ctrl_l'
+listener = keyboard.Listener(on_press=on_press, abortKey=abortKey)
+listener.start()  # start to listen on a separate thread
+# start thread with loop
+#Thread(target=loop_fun, args=(), name='loop_fun', daemon=True).start()
+#listener.join() # wait for abortKey
+
 
 # Change the working directory to the folder this script is in.
 # Doing this because I'll be putting the files from each video in their own folder on GitHub
@@ -251,6 +264,14 @@ for task_item in task_data:
 
     repeat_loops = task_item["num_of_repeats"]
     while repeat_loops:
+
+        if not user_interaction._value:
+
+            while not user_interaction._value:
+                sleep(5)
+                print("user pausing .. press ctrl links for ")
+
+
         sleep(2)
         current_state = next_state
         if current_state == "send_to_system":
@@ -280,7 +301,7 @@ for task_item in task_data:
                                                                                          rt_time_min=rt_time))
             else:
                 no_target_cnt += 1
-                threshold = threshold + 0.1
+                threshold = threshold + 0.02
                 print(f'no target, threshold = {threshold}')
                 if no_target_cnt > 5:
                     #zuviele fehlverscuhe, center ship
