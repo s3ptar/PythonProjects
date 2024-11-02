@@ -103,6 +103,61 @@ def confirm_screen(search_img, threshold, debug_enable=1):
 *  \exception   none
 *  \return      none
 *********************************************************************"""
+def confirm_screen_grey(search_img, threshold, debug_enable=1):
+    lower = np.array([155, 25, 0])
+    upper = np.array([179, 255, 255])
+
+
+    #threshold = 0.2
+    current_screen_image = wincap.saveScreenShot(debug_enable)
+    image = cv.cvtColor(current_screen_image, cv.COLOR_BGR2HSV)
+
+    mask = cv.inRange(image, lower, upper)
+    current_screen_image = cv.bitwise_and(current_screen_image, current_screen_image, mask=mask)
+    #hostile_image = cv.imread(search_img, cv.IMREAD_GRAYSCALE)
+    #current_screen_image = cv.cvtColor(current_screen_image, cv.COLOR_BGR2GRAY)
+
+    hostile_image = cv.imread(search_img, cv.IMREAD_COLOR)
+    image = cv.cvtColor(hostile_image, cv.COLOR_BGR2HSV)
+    mask = cv.inRange(image, lower, upper)
+    hostile_image = cv.bitwise_and(hostile_image, hostile_image, mask=mask)
+
+
+    cv.imwrite("debug\confirm_screen_grey_screen_debug.png", current_screen_image)
+    cv.imwrite("debug\confirm_screen_grey_search_debug.png", hostile_image)
+
+    result = cv.matchTemplate(current_screen_image, hostile_image, cv.TM_SQDIFF_NORMED)
+    #threshold = 0.17
+    # The np.where() return value will look like this:
+    # (array([482, 483, 483, 483, 484], dtype=int32), array([514, 513, 514, 515, 514], dtype=int32))
+    locations = np.where(result <= threshold)
+    # We can zip those up into a list of (x, y) position tuples
+    locations = list(zip(*locations[::-1]))
+
+    if debug_enable:
+        if locations:
+            needle_w = hostile_image.shape[1]
+            needle_h = hostile_image.shape[0]
+            line_color = (0, 255, 0)
+            line_type = cv.LINE_4
+            # Loop over all the locations and draw their rectangle
+            for loc in locations:
+                # Determine the box positions
+                top_left = loc
+                bottom_right = (top_left[0] + needle_w, top_left[1] + needle_h)
+                # Draw the box
+                cv.rectangle(current_screen_image, top_left, bottom_right, line_color, line_type)
+            cv.imwrite("debug\confirm_screen_grey_debug.png", current_screen_image)
+
+    return locations
+
+"""*********************************************************************
+*! \fn          move_mouse(target_pos)
+*  \brief       set mouse to posotion and click
+*  \param       none
+*  \exception   none
+*  \return      none
+*********************************************************************"""
 def confirm_region(search_img, threshold, region, debug_enable=1):
 
     #current_screen_image = cv.imread(basic_img, cv.IMREAD_COLOR)
@@ -250,6 +305,7 @@ def close_chat_window():
 *********************************************************************"""
 def repair_ship(dock):
     repair_need = 0
+    return_value = 0
     select_dock(dock)
     #check if ship need repair
     move_mouse(mouse_pos_top)
@@ -264,7 +320,7 @@ def repair_ship(dock):
     pos = confirm_screen("./picture/gratis_repair.png", 0.1)
     if pos:
         move_mouse_position(pos[0])
-        return 0
+        return 1
     sleep(3)
     print("check repair help")
     pos = confirm_screen("./picture/hilfe_btn.png", 0.1)
@@ -287,15 +343,15 @@ def repair_ship(dock):
             move_mouse_position(repair_speed_up_pos)
             sleep(1)
             pos = confirm_screen("./picture/gratis_repair.png", 0.1)
-            if not pos:
-                pos = confirm_screen("./picture/repair_done.png", 0.1)
+            #if not pos:
+            #    pos = confirm_screen("./picture/repair_done.png", 0.1)
 
 
 
             #if not pos:
             #    pos = confirm_screen("./picture/repair_done.png", 0.1)
         move_mouse_position(pos[0])
-    print("repair done")
+    return 1
 
 
 
@@ -320,10 +376,11 @@ def send_to_system(system_name, dock):
     move_mouse_position((943, 132))
     sleep(0.5)
     pyautogui.write(system_name)
-    sleep(3)
+    sleep(0.5)
     system_path = './picture/systems/' + system_name + '.png'
     system_path = system_path.replace(" ", "_")
-    pos = confirm_screen(system_path, 0.1)
+    pos = confirm_screen(system_path, 0.01)
+
     move_mouse_position(pos[0])
     sleep(0.5)
     # click los button
@@ -447,7 +504,7 @@ def attacking(target_list, next_target = 1, threshold = 0.1):
 
         if target_data['battleship'] > 0:
             # battleships
-            pos = confirm_screen('./picture/hostiles/battleship.png', threshold, )
+            pos = confirm_screen_grey('./picture/hostiles/battleship.png', threshold, )
             if next_target:
 
                 loop_index = 0
@@ -474,7 +531,7 @@ def attacking(target_list, next_target = 1, threshold = 0.1):
         if target_data['interceptor'] > 0:
             # interceptor
 
-            pos = confirm_screen('./picture/hostiles/interceptor.png', threshold, )
+            pos = confirm_screen_grey('./picture/hostiles/interceptor.png', threshold, )
             if next_target:
                 loop_index = 0
 
@@ -499,7 +556,7 @@ def attacking(target_list, next_target = 1, threshold = 0.1):
 
         if target_data['explorer'] > 0:
             # science
-            pos = confirm_screen('./picture/hostiles/science.png', threshold )
+            pos = confirm_screen_grey('./picture/hostiles/science.png', threshold )
             if next_target:
                 loop_index = 0
 
@@ -526,7 +583,7 @@ def attacking(target_list, next_target = 1, threshold = 0.1):
 
         if target_data['miner'] > 0:
             # miner
-            pos = confirm_screen('./picture/hostiles/miner.png', threshold)
+            pos = confirm_screen_grey('./picture/hostiles/miner.png', threshold)
             if next_target:
                 loop_index = 0
                 if pos:

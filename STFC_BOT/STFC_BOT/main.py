@@ -16,6 +16,8 @@ from pywinauto import keyboard
 import json
 from time import sleep
 from pynput import keyboard
+from pywinauto.keyboard import send_keys
+#import keyboard
 from threading import Thread
 import threading
 """*********************************************************************
@@ -57,8 +59,26 @@ json_config_data_mantis = """
         "explorer":0,
         "miner":0
     }],
-    "num_of_target_kills":1,
+    "num_of_target_kills":999999,
     "num_of_repeats": 4,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":1
+}
+]
+"""
+
+json_config_data_swarm = """
+    [
+    {
+    "target_system" : "beilum",
+    "target_list":[{
+        "battleship":0,
+        "interceptor":1,
+        "explorer":0,
+        "miner":0
+    }],
+    "num_of_target_kills":75,
+    "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":0
 }
@@ -70,7 +90,27 @@ json_config_data_mantis = """
                 
 *********************************************************************"""
 
-json_config_data2 = """
+
+json_config_data_ = """
+    [
+{
+    "target_system" : "intello",
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":100,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
+"""
+
+
+json_config_data = """
     [
     {
     "target_system" : "Temminck",
@@ -93,23 +133,70 @@ json_config_data2 = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":10,
+    "num_of_target_kills":30,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":0
 },
 {
-    "target_system" : "santheis",
+    "target_system" : "solis omega",
     "target_list":[{
-        "battleship":0,
+        "battleship":1,
         "interceptor":0,
-        "explorer":1,
+        "explorer":0,
         "miner":0
     }],
-    "num_of_target_kills":25,
+    "num_of_target_kills":30,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":0
+},
+{
+    "target_system" : "lyrae nebula",
+    "target_list":[{
+        "battleship":0,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":13,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+},
+{
+    "target_system" : "sivis", 
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":99999,
+    "num_of_repeats": 2,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
+"""
+
+
+
+json_config_data_sol = """
+    [
+    
+{
+    "target_system" : "sol",
+    "target_list":[{
+        "battleship":0,
+        "interceptor":1,
+        "explorer":0,
+        "miner":1
+    }],
+    "num_of_target_kills":100,
+    "num_of_repeats": 3,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":1
 }
 ]
 """
@@ -118,7 +205,7 @@ json_config_data2 = """
 """*********************************************************************
                 borg
 *********************************************************************"""
-json_config_data_borg = """
+json_config_data_ = """
     [{
     "target_system" : "solus ynestri", 
     "target_list":[{
@@ -136,16 +223,16 @@ json_config_data_borg = """
 """
 
 """*********************************************************************
-                borg
+                stella
 *********************************************************************"""
-json_config_data_beta = """
+json_config_data_f = """
     [{
-    "target_system" : "beta-sektor", 
+    "target_system" : "lindstrom", 
     "target_list":[{
-        "battleship":1,
-        "interceptor":1,
-        "explorer":1,
-        "miner":0
+        "battleship":0,
+        "interceptor":0,
+        "explorer":0,
+        "miner":1
     }],
     "num_of_target_kills":999999,    
     "num_of_repeats": 2,
@@ -156,9 +243,9 @@ json_config_data_beta = """
 """
 
 """*********************************************************************
-                beta sector
+                beta sector  
 *********************************************************************"""
-json_config_data = """
+json_config_data_beta = """
     [{
     "target_system" : "beta-sektor", 
     "target_list":[{
@@ -167,28 +254,93 @@ json_config_data = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":999999,
-    "num_of_repeats": 4,
+    "num_of_target_kills":50,
+    "num_of_repeats": 2,
     "closed_kill_enable":1,
     "cargo_modus_enabled":0
 }
 ]
 """
 
+"""*********************************************************************
+                4 stat schiff parts
+*********************************************************************"""
+json_config_data_4 = """
+    [{
+    "target_system" : "sivis", 
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":99999,
+    "num_of_repeats": 2,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
+"""
 
-
-json_config_data22 = """
+json_config_data_faction = """
     [
     {
+    "target_system" : "intello",
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":40,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+},
+{
     "target_system" : "mullins",
     "target_list":[{
         "battleship":1,
-        "interceptor":0,
-        "explorer":0,
+        "interceptor":1,
+        "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":35,
-    "num_of_repeats": 2,
+    "num_of_target_kills":40,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+},
+{
+    "target_system" : "johbacor",
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":40,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
+}
+]
+"""
+
+json_config_data_ruhm = """
+    [
+    {
+    "target_system" : "intello",
+    "target_list":[{
+    
+    
+    
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":999,
+    "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":0
 }
@@ -235,6 +387,9 @@ def loop_fun():
 __name__ == '__main__'
 
 
+#navigation.confirm_screen_grey("./picture/hostiles/interceptor.png", 0.4)
+
+
 abortKey = 'ctrl_l'
 listener = keyboard.Listener(on_press=on_press, abortKey=abortKey)
 listener.start()  # start to listen on a separate thread
@@ -243,12 +398,13 @@ listener.start()  # start to listen on a separate thread
 #listener.join() # wait for abortKey
 
 
+
 # Change the working directory to the folder this script is in.
 # Doing this because I'll be putting the files from each video in their own folder on GitHub
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 print("chat close")
-#navigation.close_chat_window()
+navigation.close_chat_window()
 print("repair")
 #navigation.repair_ship(1)
 
@@ -288,7 +444,7 @@ for task_item in task_data:
                 next_state = "attack_targets"
                 #reset miss clicks
                 no_target_cnt = 0
-                threshold = 0.12
+                threshold = 0.4
 
 
         if current_state == "attack_targets":
@@ -329,7 +485,7 @@ for task_item in task_data:
             if return_val:
                 if ((target_cnt >= task_item["num_of_target_kills"])):
                     #send ship home
-                    keyboard.send_keys('%m')
+                    send_keys('%m')
                     next_state = "send_ship_home"
                 elif navigation.check_ship(1):
                     next_state = "send_ship_home"
@@ -343,8 +499,10 @@ for task_item in task_data:
             sleep(4)
 
         if current_state == "repair_ship":
-            navigation.repair_ship(1)
-            repeat_loops -= 1
+            return_val = navigation.repair_ship(1)
+            if return_val:
+                next_state = "send_to_system"
+                repeat_loops -= 1
 
 
 
