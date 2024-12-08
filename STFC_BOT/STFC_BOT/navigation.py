@@ -36,7 +36,8 @@ region_allianz_btn = (5,900,100,100)
 region_ship_properties_repair = (5,900,100,60)
 offset_y = 11
 offset_x = -51
-repair_speed_up_pos = (1100,580)
+#repair_speed_up_pos = (1100,580)
+repair_speed_up_pos = (1157,491)
 searchinput_field_pos = (800,450)
 systemname_field_pos = (800,100)
 pos_location_btn_no_chat = (100, 910)
@@ -58,6 +59,18 @@ wincap = WindowCapture('Star Trek Fleet Command')
 """*********************************************************************
 * Local Funtions
 *********************************************************************"""
+
+"""*********************************************************************
+*! \fn          check_miss_clicks(target_pos)
+*  \brief       set mouse to posotion and click
+*  \param       none
+*  \exception   none
+*  \return      none
+*********************************************************************"""
+def check_miss_clicks():
+    #pos = confirm_screen("./picture/missclick/holo_esc.png", 0.1)
+    #if pos:
+    keyboard.send_keys('{ESC}')
 
 
 """*********************************************************************
@@ -299,64 +312,69 @@ def close_chat_window():
 """*********************************************************************
 *! \fn          select_dock(dock_num):
 *  \brief       select specified dock and open ship properties
-*  \param       none
+*  \param       dock - num of doc
+*  \param       repair_first_time, if first time rep
 *  \exception   none
 *  \return      none
 *********************************************************************"""
-def repair_ship(dock):
+def repair_ship(dock, repair_first_time):
     repair_need = 0
     return_value = 0
-    select_dock(dock)
+    #keyboard.send_keys('{VK_F2}')
+    if not repair_first_time:
+        select_dock(dock)
+        sleep(2)
     #check if ship need repair
-    move_mouse(mouse_pos_top)
+    ##move_mouse(mouse_pos_top)
     #hit repair button if exists
     print ("check repair")
-    pos = confirm_screen("./picture/dock_state_repair_btn.png", 0.1)
+    pos = confirm_screen("./picture/dock_state_repair_btn.png", 0.01,1)
     if pos:
         move_mouse_position(pos[0])
-        repair_need = 1
-    sleep(3)
-    print("check gratir repair")
+        # repair_need = 1
+        return 0
+
     pos = confirm_screen("./picture/gratis_repair.png", 0.1)
     if pos:
         move_mouse_position(pos[0])
         return 1
-    sleep(3)
-    print("check repair help")
-    pos = confirm_screen("./picture/hilfe_btn.png", 0.1)
+
+    pos = confirm_screen("./picture/hilfe_btn.png", 0.01)
     if pos:
         move_mouse_position(pos[0])
-        repair_need = 1
-    sleep(3)
+        # repair_need = 1
+        return 0
+
     # hit speed button if exists
-    print("check repair speedup")
-    pos = confirm_screen("./picture/beschleunigen_btn.png", 0.1)
+    pos = confirm_screen("./picture/beschleunigen_btn.png", 0.01,1)
     if pos:
         move_mouse_position(pos[0])
-        repair_need = 1
-    sleep(3)
-    print("repair")
-    #repair unitl done
-    if repair_need == 1:
-        pos = confirm_screen("./picture/gratis_repair.png", 0.1)
-        while not pos:
-            move_mouse_position(repair_speed_up_pos)
-            sleep(1)
-            pos = confirm_screen("./picture/gratis_repair.png", 0.1)
-            #if not pos:
-            #    pos = confirm_screen("./picture/repair_done.png", 0.1)
+        # repair_need = 1
+        return 0
 
-
-
-            #if not pos:
-            #    pos = confirm_screen("./picture/repair_done.png", 0.1)
+    # check gratis repair
+    pos = confirm_screen("./picture/int_repair_speed_up.png", 0.1)
+    if pos:
         move_mouse_position(pos[0])
+        return 0
+
+    #check gratis repair
+    pos = confirm_screen("./picture/repair_speed_up_okay.png", 0.1)
+    if pos:
+        move_mouse_position(pos[0])
+        return 0
+
+    pos = confirm_screen("./picture/repair_done.png", 0.05, 1)
+    if not pos:
+        move_mouse_position(repair_speed_up_pos)
+        return 0
+
     return 1
 
 
 
 """*********************************************************************
-*! \fn          send_to_system():
+*! \fn          send_to_system():sn
 *  \brief       select specified dock and open ship properties
 *  \param       none
 *  \exception   none
@@ -380,7 +398,8 @@ def send_to_system(system_name, dock):
     system_path = './picture/systems/' + system_name + '.png'
     system_path = system_path.replace(" ", "_")
     pos = confirm_screen(system_path, 0.01)
-
+    if not pos:
+        return 0
     move_mouse_position(pos[0])
     sleep(0.5)
     # click los button
@@ -394,9 +413,10 @@ def send_to_system(system_name, dock):
     #click system
     move_mouse_position((960, 519))
     sleep(0.5)
-    pos = confirm_screen('./picture/setze_kurs.png', 0.17)
+    pos = confirm_screen('./picture/setze_kurs.png', 0.2,1 )
     if pos:
         move_mouse_position(pos[0])
+        return 1
         #no token systen. send to bekannte systeme
     #move_mouse_position((800, 500))
     pos = confirm_screen('./picture/nicht_im_system.png', 0.17)
@@ -411,10 +431,18 @@ def send_to_system(system_name, dock):
 
     else:
         # new click
-        move_mouse_position((820, 490))
-        pos = confirm_screen( './picture/nicht_im_system.png', 0.17)
+        # token system
+        #move_mouse_position((820, 490))
+        #pos = confirm_screen( './picture/nicht_im_system.png', 0.17)
+        pos = confirm_screen('./picture/setze_kurs_toekn.png', 0.17)
         if pos:
             move_mouse_position(pos[0])
+            pos = confirm_screen('./picture/setze_kurs_token_route.png', 0.17)
+            if pos:
+                move_mouse_position(pos[0])
+                pos = confirm_screen('./picture/setze_kurs_token_route.png', 0.17)
+                if pos:
+                    move_mouse_position(pos[0])
             return 1
         else:
             return 1
@@ -433,13 +461,13 @@ def wait_unilt_ship_rdy(dock):
     loop_condition = 1
     return_value = 0
 
-    if confirm_screen('./picture/dock_state_schiff_wartet.png', 0.05):
+    if confirm_screen('./picture/dock_state_schiff_wartet.png', 0.01,1):
         loop_condition = 0
         return_value = 1
-    if confirm_screen('./picture/dock_state_repair_btn.png', 0.05):
+    if confirm_screen('./picture/dock_state_repair_btn.png', 0.01,1):
         loop_condition = 0
         return_value = 2
-    if confirm_screen('./picture/dock_state_destroyed.png', 0.05):
+    if confirm_screen('./picture/dock_state_destroyed.png', 0.01,1):
         loop_condition = 0
         return_value = 3
     sleep(1)
@@ -604,8 +632,9 @@ def attacking(target_list, next_target = 1, threshold = 0.1):
                     target_pos = pos[0]
                     target_class = "miner"
 
-        #select target
-        if target_pos:
+        #select target in the allowed windows
+        if (target_pos and (target_pos[1] > 110) and (target_pos[1] < 900) and (target_pos[0] > 183) and
+                (target_pos[0] < 1684)):
             move_mouse_position(target_pos, -35, +3)
         else:
             return 0
