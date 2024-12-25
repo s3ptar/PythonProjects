@@ -1,9 +1,12 @@
 import json
 import os
 import navigation
+import attacking
 import datetime
 from datetime import timedelta
 import time
+import sys
+
 """*********************************************************************
 *! \fn          main
 *  \brief       start code
@@ -17,21 +20,22 @@ import json
 from time import sleep
 from pynput import keyboard
 from pywinauto.keyboard import send_keys
-#import keyboard
+# import keyboard
 from threading import Thread
 import threading
+
 """*********************************************************************
                 Constant
 *********************************************************************"""
-#without chat
+# without chat
 pos_dock1_no_chat = (750, 950)
-region_dock1_no_chat = (650,910,90,110)
+region_dock1_no_chat = (650, 910, 90, 110)
 pos_attack_btn_no_chat = (1300, 600)
 pos_location_btn_no_chat = (100, 910)
 pos_recall_btn_no_chat = (100, 980)
-pos_close_chat_btn = (500,20)
-pos_repair_screen_btn = (1200,540)
-pos_battle_screen_btn = (1860,850)
+pos_close_chat_btn = (500, 20)
+pos_repair_screen_btn = (1200, 540)
+pos_battle_screen_btn = (1860, 850)
 
 dummy = 0
 
@@ -61,8 +65,8 @@ json_config_data_mantis = """
         "explorer":0,
         "miner":0
     }],
-    "num_of_target_kills":999999,
-    "num_of_repeats": 4,
+    "num_of_target_kills":40,
+    "num_of_repeats": 2,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 }
@@ -82,16 +86,16 @@ json_config_data_swarm = """
     "num_of_target_kills":75,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 }
 ]
 """
 
+
 """*********************************************************************
                 dailys
-                
-*********************************************************************"""
 
+*********************************************************************"""
 
 json_config_data_ = """
     [
@@ -106,7 +110,7 @@ json_config_data_ = """
     "num_of_target_kills":100,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 }
 
 ]
@@ -125,11 +129,10 @@ json_config_data_4g = """
     "num_of_target_kills":52,
     "num_of_repeats": 4,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 }
 ]
 """
-
 
 json_config_data_sipra = """
     [
@@ -144,12 +147,30 @@ json_config_data_sipra = """
     "num_of_target_kills":100,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 }
 ]
 """
 
-json_config_data = """
+json_config_data__ = """
+    [
+{
+    "target_system" : "timvir", 
+    "target_list":[{
+        "battleship":1,
+        "interceptor":0,
+        "explorer":0,
+        "miner":1
+    }],
+    "num_of_target_kills":100,
+    "num_of_repeats": 3,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":1
+}
+]
+"""
+
+json_config_data_day = """
     [
 {
     "target_system" : "Solis Omega",
@@ -159,10 +180,10 @@ json_config_data = """
         "explorer":0,
         "miner":0
     }],
-    "num_of_target_kills":75,
+    "num_of_target_kills":100,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 },
 {
     "target_system" : "axo'tae",
@@ -175,7 +196,7 @@ json_config_data = """
     "num_of_target_kills":20,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 },
 {
     "target_system" : "lyrae nebula",
@@ -185,10 +206,10 @@ json_config_data = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":16,
-    "num_of_repeats": 2,
+    "num_of_target_kills":20,
+    "num_of_repeats": 1,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 },
 {
     "target_system" : "sivis", 
@@ -198,10 +219,10 @@ json_config_data = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":60,
+    "num_of_target_kills":75,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 },
 {
     "target_system" : "mehruunahd", 
@@ -211,10 +232,10 @@ json_config_data = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":24,
-    "num_of_repeats": 2,
+    "num_of_target_kills":18,
+    "num_of_repeats": 4,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 },
    {
     "target_system" : "Cirriped",
@@ -224,17 +245,17 @@ json_config_data = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":40,
-    "num_of_repeats": 1,
+    "num_of_target_kills":5,
+    "num_of_repeats": 2,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 }
 ]
 """
 
-json_config_data_vessel = """
+json_config_data = """
     [
-    
+
 {
     "target_system" : "romulus",
     "target_list":[{
@@ -251,13 +272,12 @@ json_config_data_vessel = """
 ]
 """
 
-
 """*********************************************************************
                 borg
 *********************************************************************"""
-json_config_data_ = """
+json_config_data_borg = """
     [{
-    "target_system" : "solus ynestri", 
+    "target_system" : "jovia", 
     "target_list":[{
         "battleship":1,
         "interceptor":0,
@@ -267,7 +287,7 @@ json_config_data_ = """
     "num_of_target_kills":999999,    
     "num_of_repeats": 2,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 }
 ]
 """
@@ -287,15 +307,15 @@ json_config_data_f = """
     "num_of_target_kills":999999,    
     "num_of_repeats": 2,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 }
 ]
 """
 
 """*********************************************************************
-                beta sector  
+                beta sector  - data pads
 *********************************************************************"""
-json_config_data_beta = """
+json_config_data_datapads = """
     [{
     "target_system" : "beta-sektor", 
     "target_list":[{
@@ -304,10 +324,10 @@ json_config_data_beta = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":50,
-    "num_of_repeats": 2,
+    "num_of_target_kills":100,
+    "num_of_repeats": 4,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 }
 ]
 """
@@ -327,7 +347,7 @@ json_config_data_4 = """
     "num_of_target_kills":99999,
     "num_of_repeats": 2,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 }
 ]
 """
@@ -337,15 +357,15 @@ json_config_data_4 = """
 *********************************************************************"""
 json_config_data_fatu = """
     [{
-    "target_system" : "scanlon", 
+    "target_system" : "litzarr", 
     "target_list":[{
         "battleship":1,
         "interceptor":1,
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":50,
-    "num_of_repeats": 8,
+    "num_of_target_kills":200,
+    "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":0
 }
@@ -365,7 +385,7 @@ json_config_data_faction = """
     "num_of_target_kills":40,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 },
 {
     "target_system" : "mullins",
@@ -378,7 +398,7 @@ json_config_data_faction = """
     "num_of_target_kills":40,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 },
 {
     "target_system" : "johbacor",
@@ -391,20 +411,19 @@ json_config_data_faction = """
     "num_of_target_kills":40,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 }
 ]
 """
-
 
 json_config_data_ruhm = """
     [
     {
     "target_system" : "intello",
     "target_list":[{
-    
-    
-    
+
+
+
         "battleship":1,
         "interceptor":1,
         "explorer":1,
@@ -413,11 +432,10 @@ json_config_data_ruhm = """
     "num_of_target_kills":999,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
-    "cargo_modus_enabled":0
+    "cargo_modus_enabled":1
 }
 ]
 """
-
 
 """*********************************************************************
 *! \fn          def on_press(key, abortKey='ctrl_l')
@@ -426,6 +444,8 @@ json_config_data_ruhm = """
 *  \exception   none
 *  \return      none
 *********************************************************************"""
+
+
 def on_press(key, abortKey='ctrl_l'):
     user_interrupt = 1
     try:
@@ -433,14 +453,13 @@ def on_press(key, abortKey='ctrl_l'):
     except:
         k = key.name  # other keys
 
-    #print('pressed %s' % (k))
+    # print('pressed %s' % (k))
     if k == abortKey:
-        #print('end loop ...')
+        # print('end loop ...')
         if user_interaction._value:
             user_interaction.acquire()
         else:
             user_interaction.release()
-
 
 
 def loop_fun():
@@ -453,19 +472,14 @@ def loop_fun():
         sleep(5)
 
 
-
-
 __name__ == '__main__'
-
-
 
 abortKey = 'ctrl_l'
 listener = keyboard.Listener(on_press=on_press, abortKey=abortKey)
 listener.start()  # start to listen on a separate thread
 # start thread with loop
-#Thread(target=loop_fun, args=(), name='loop_fun', daemon=True).start()
-#listener.join() # wait for abortKey
-
+# Thread(target=loop_fun, args=(), name='loop_fun', daemon=True).start()
+# listener.join() # wait for abortKey
 
 
 # Change the working directory to the folder this script is in.
@@ -475,8 +489,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 print("chat close")
 navigation.close_chat_window()
 print("repair")
-#navigation.repair_ship(1)
-
+# navigation.repair_ship(1)
 
 
 print("start task")
@@ -496,9 +509,11 @@ for task_item in task_data:
                 sleep(10)
                 print("user pausing .. press ctrl links for ")
 
-
         sleep(1)
         current_state = next_state
+        """
+        Start sending ship out in space
+        """
         if current_state == "send_to_system":
             print("send to system " + task_item["target_system"])
             return_val = navigation.send_to_system(task_item["target_system"], 1)
@@ -506,19 +521,23 @@ for task_item in task_data:
             if return_val:
                 next_state = "wait_for_ship_arrive_system"
                 threshold = 0.12
+                threshold = 0.20
+                #wait for start
+                sleep(10)
 
         if current_state == "wait_for_ship_arrive_system":
             return_val = navigation.wait_unilt_ship_rdy(1)
-            if return_val:
+            if return_val > 0 & return_val < 99:
                 next_state = "attack_targets"
-                #reset miss clicks
+                # reset miss clicks
                 no_target_cnt = 0
                 threshold = 0.4
-
+            if return_val == 99:
+                next_state = "send_to_system"
 
         if current_state == "attack_targets":
-            #navigation.prepare_attacking()
-            if navigation.attacking(task_item["target_list"], task_item["closed_kill_enable"]):
+            # navigation.prepare_attacking()
+            if attacking.attacking(task_item["target_list"], task_item["closed_kill_enable"]):
                 target_cnt += 1
                 retry_target_cnt += 1
                 retry_target_cnt = 0
@@ -527,8 +546,11 @@ for task_item in task_data:
                 rt_time = (time.time() - start_time) / 60
                 print("Killed Target : {kills} / {kills_to_go} - runtime : {rt_time_min:3.0f}min".format(
                     kills=target_cnt, kills_to_go=task_item["num_of_target_kills"], rt_time_min=rt_time))
+                if rt_time >= 400:
+                    sys.exit("Stop after 400min")
             else:
                 no_target_cnt += 1
+                # no_target_cnt = 0
                 threshold = threshold + 0.02
 
                 print(f'no target, threshold = {threshold}')
@@ -538,9 +560,8 @@ for task_item in task_data:
                     navigation.check_miss_clicks()
 
                 if no_target_cnt > 5:
-                    #zuviele fehlverscuhe, center ship
+                    # zuviele fehlverscuhe, center ship
                     next_state = "send_to_system"
-
 
             """while fighting_mode:# or not task_item['cargo_modus_enabled']:
                 #wait unitl ship arrive
@@ -562,10 +583,10 @@ for task_item in task_data:
             return_val = navigation.wait_unilt_ship_rdy(1)
             if return_val:
                 if ((target_cnt >= task_item["num_of_target_kills"])):
-                    #send ship home
+                    # send ship home
                     send_keys('%m')
                     next_state = "send_ship_home"
-                elif navigation.check_ship(1):
+                elif navigation.check_ship(1, task_item["cargo_modus_enabled"]):
                     next_state = "send_ship_home"
                 else:
                     next_state = "attack_targets"
@@ -586,10 +607,6 @@ for task_item in task_data:
                 next_state = "send_to_system"
                 repeat_loops -= 1
                 bl_rist_time_rep = 0
-
-
-
-
 
 
 

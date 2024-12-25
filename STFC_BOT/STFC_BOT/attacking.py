@@ -294,159 +294,7 @@ def select_dock(dock_num):
     #    if dock_num == 1:
     #        keyboard.send_keys('%1')
 
-"""*********************************************************************
-*! \fn          select_dock(dock_num):
-*  \brief       select specified dock and open ship properties
-*  \param       none
-*  \exception   none
-*  \return      none
-*********************************************************************"""
-def close_chat_window():
-    #check if ship need repair
-    move_mouse(mouse_pos_top)
-    pos = confirm_screen("./picture/chat_side_close.png", 0.1)
-    if pos:
-        print("close chat windows")
-        move_mouse_position(pos[0])
 
-"""*********************************************************************
-*! \fn          select_dock(dock_num):
-*  \brief       select specified dock and open ship properties
-*  \param       dock - num of doc
-*  \param       repair_first_time, if first time rep
-*  \exception   none
-*  \return      none
-*********************************************************************"""
-def repair_ship(dock, repair_first_time):
-    repair_need = 0
-    return_value = 0
-    #keyboard.send_keys('{VK_F2}')
-    if not repair_first_time:
-        select_dock(dock)
-        sleep(2)
-    #check if ship need repair
-    ##move_mouse(mouse_pos_top)
-    #hit repair button if exists
-    print ("check repair")
-    pos = confirm_screen("./picture/dock_state_repair_btn.png", 0.01,1)
-    if pos:
-        move_mouse_position(pos[0])
-        # repair_need = 1
-        return 0
-
-    pos = confirm_screen("./picture/gratis_repair.png", 0.1)
-    if pos:
-        move_mouse_position(pos[0])
-        return 1
-
-    pos = confirm_screen("./picture/hilfe_btn.png", 0.01)
-    if pos:
-        move_mouse_position(pos[0])
-        # repair_need = 1
-        return 0
-
-    # hit speed button if exists
-    pos = confirm_screen("./picture/beschleunigen_btn.png", 0.01,1)
-    if pos:
-        move_mouse_position(pos[0])
-        # repair_need = 1
-        return 0
-
-    # check gratis repair
-    pos = confirm_screen("./picture/int_repair_speed_up.png", 0.1)
-    if pos:
-        move_mouse_position(pos[0])
-        return 0
-
-    #check gratis repair
-    pos = confirm_screen("./picture/repair_speed_up_okay.png", 0.1)
-    if pos:
-        move_mouse_position(pos[0])
-        return 0
-
-    pos = confirm_screen("./picture/repair_done.png", 0.05, 1)
-    if not pos:
-        move_mouse_position(repair_speed_up_pos)
-        return 0
-
-    return 1
-
-
-
-"""*********************************************************************
-*! \fn          send_to_system():sn
-*  \brief       select specified dock and open ship properties
-*  \param       none
-*  \exception   none
-*  \return      none
-*********************************************************************"""
-def send_to_system(system_name, dock):
-
-    #bookmark
-    move_mouse_position((1826,878))
-
-    sleep(2)
-    #systgem search
-    move_mouse_position((1732, 102))
-    sleep(2)
-    # enter system name and click
-    move_mouse_position((972, 484))
-    sleep(2)
-    move_mouse_position((943, 132))
-    sleep(2)
-    pyautogui.write(system_name)
-    sleep(2)
-    system_path = './picture/systems/' + system_name + '.png'
-    system_path = system_path.replace(" ", "_")
-    pos = confirm_screen(system_path, 0.01)
-    if not pos:
-        return 0
-    move_mouse_position(pos[0])
-    sleep(2)
-    # click los button
-    move_mouse_position((1001,1007))
-    sleep(2)
-    #check if tiken
-
-    #scroll down
-    pyautogui.scroll(+8000)  # scroll out
-    sleep(0.5)
-    #click system
-    move_mouse_position((960, 519))
-    sleep(0.5)
-    pos = confirm_screen('./picture/setze_kurs.png', 0.2,1 )
-    if pos:
-        move_mouse_position(pos[0])
-        return 1
-        #no token systen. send to bekannte systeme
-    #move_mouse_position((800, 500))
-    pos = confirm_screen('./picture/nicht_im_system.png', 0.17)
-    if pos:
-        move_mouse_position(pos[0])
-        # check token system
-        wincap.saveScreenShot()
-        pos = confirm_screen('./picture/setze_kurs_token_route.png', 0.17)
-        if pos:
-            move_mouse_position(pos[0])
-        return 1
-
-    else:
-        # new click
-        # token system
-        #move_mouse_position((820, 490))
-        #pos = confirm_screen( './picture/nicht_im_system.png', 0.17)
-        pos = confirm_screen('./picture/setze_kurs_toekn.png', 0.17)
-        if pos:
-            move_mouse_position(pos[0])
-            pos = confirm_screen('./picture/setze_kurs_token_route.png', 0.17)
-            if pos:
-                move_mouse_position(pos[0])
-                pos = confirm_screen('./picture/setze_kurs_token_route.png', 0.17)
-                if pos:
-                    move_mouse_position(pos[0])
-            return 1
-        else:
-            return 1
 
 
 """*********************************************************************
@@ -471,9 +319,6 @@ def wait_unilt_ship_rdy(dock):
     if confirm_screen('./picture/dock_state_destroyed.png', 0.01,1):
         loop_condition = 0
         return_value = 3
-    if confirm_screen('./picture/dock_state_ship_in_dock.png', 0.01,1):
-        loop_condition = 0
-        return_value = 99
     sleep(1)
 
     #Dock 1 abwählen
@@ -484,6 +329,185 @@ def wait_unilt_ship_rdy(dock):
     #print("schiff stop moving")
     return return_value
 
+"""*********************************************************************
+*! \fn          prepare_attacking(dock)
+*  \brief       preapare attakscreen
+*  \param       none
+*  \exception   none
+*  \return      none
+*********************************************************************"""
+def prepare_attacking():
+    pos = confirm_screen('./picture/battlescrren.png', 0.07)
+    #battle screen aktivieren falls nicht schon aktiviert
+    if pos:
+        move_mouse_position((1878,855))
+        #keyboard.send_keys('%shift')
+    move_mouse_position((224,202))
+    sleep(1)
+    pyautogui.scroll(-8000)  # scroll out
+    return
+
+"""*********************************************************************
+*! \fn          attacking(target_setup, next_target)
+*  \brief       attaking until task empty
+*  \param       target_list - list with target classes
+*  \param       next_target - default enable, if 0 jump over closed target calc
+*  \exception   none
+*  \return      none
+*********************************************************************"""
+def attacking(target_list, next_target = 1, threshold = 0.1):
+    try:
+        prepare_attacking()
+        target_class = 0
+        target_pos = 9999999999
+        result_locs = list()
+
+        target_data = target_list[0]
+
+        #check if battle mode enabled
+
+        if next_target:
+            target_pos = 9999999999
+        else:
+            target_pos = 0
+
+        ship_pos = confirm_screen('./picture/ship_dock_a.png', 0.1)
+        if ship_pos:
+            ship_pos = confirm_screen('./picture/ship_dock_a.png', 0.1)
+        else:
+            ship_pos = [(960, 540)]
+
+        distance = 99999999999999
+
+        if target_data['battleship'] > 0:
+            # battleships
+            pos = confirm_screen_grey('./picture/hostiles/battleship.png', threshold, )
+            if next_target:
+
+                loop_index = 0
+
+                if pos:
+                    """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
+                                                   (np.square(ship_pos[0][1] - pos[0][1])))"""
+                    # found closed spot
+                    for loc in pos:
+                        next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
+                                              (np.square(ship_pos[0][1] - loc[1])))
+
+                        if distance > next_target:
+                            distance = next_target
+                            closed_target_pos = loop_index
+                            target_pos = pos[loop_index]
+                            target_class = "battleship"
+                        loop_index = loop_index + 1
+            else:
+                if not target_pos and pos:
+                    target_pos = pos[0]
+                    target_class = "battleship"
+
+        if target_data['interceptor'] > 0:
+            # interceptor
+
+            pos = confirm_screen_grey('./picture/hostiles/interceptor.png', threshold, )
+            if next_target:
+                loop_index = 0
+
+                if pos:
+                    """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
+                                       (np.square(ship_pos[0][1] - pos[0][1])))"""
+                    # found closed spot
+                    for loc in pos:
+                        next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
+                                              (np.square(ship_pos[0][1] - loc[1])))
+
+                        if distance > next_target:
+                            distance = next_target
+                            closed_target_pos = loop_index
+                            target_pos = pos[loop_index]
+                            target_class = "interceptor"
+                        loop_index = loop_index + 1
+            else:
+                if not target_pos and pos:
+                    target_pos = pos[0]
+                    target_class = "interceptor"
+
+        if target_data['explorer'] > 0:
+            # science
+            pos = confirm_screen_grey('./picture/hostiles/science.png', threshold )
+            if next_target:
+                loop_index = 0
+
+                if pos:
+                    """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
+                                       (np.square(ship_pos[0][1] - pos[0][1])))"""
+                    # found closed spot
+                    for loc in pos:
+                        next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
+                                              (np.square(ship_pos[0][1] - loc[1])))
+
+                        if distance > next_target:
+                            distance = next_target
+                            closed_target_pos = loop_index
+                            target_pos = pos[loop_index]
+                            target_class = "science"
+                        loop_index = loop_index + 1
+                else:
+                    if not target_pos:
+                        target_pos = pos[0]
+                        target_class = "science"
+
+                #move_mouse_position(target_pos,-20)
+
+        if target_data['miner'] > 0:
+            # miner
+            pos = confirm_screen_grey('./picture/hostiles/miner.png', threshold)
+            if next_target:
+                loop_index = 0
+                if pos:
+                    """distance = np.sqrt((np.square(ship_pos[0][0] - pos[0][0])) +
+                                                   (np.square(ship_pos[0][1] - pos[0][1])))"""
+                    # found closed spot
+                    for loc in pos:
+                        next_target = np.sqrt((np.square(ship_pos[0][0] - loc[0])) +
+                                              (np.square(ship_pos[0][1] - loc[1])))
+
+                        if distance > next_target:
+                            distance = next_target
+                            target_pos = pos[loop_index]
+                            target_class = "miner"
+                        loop_index = loop_index + 1
+            else:
+                if not target_pos and pos:
+                    target_pos = pos[0]
+                    target_class = "miner"
+
+        #select target in the allowed windows
+        if (target_pos and (target_pos[1] > 110) and (target_pos[1] < 900) and (target_pos[0] > 183) and
+                (target_pos[0] < 1684)):
+            move_mouse_position(target_pos, -35, +3)
+        else:
+            return 0
+        if target_class == "battleship":
+            confirm_path = './picture/hostiles/confirm_battleship.png'
+        elif target_class == "interceptor":
+            confirm_path = './picture/hostiles/confirm_interceptor.png'
+        elif target_class == "science":
+            confirm_path = './picture/hostiles/confirm_science.png'
+        elif target_class == "miner":
+            confirm_path = './picture/hostiles/confirm_miner.png'
+        else:
+            print("no target")
+            return 0
+        #check target and attcack
+        pos = confirm_screen(confirm_path, 0.1, )
+        if pos:
+            #pos = confirm_screen('./picture/attack_ready.png', 0.1, )
+            move_mouse_position((1287,635))
+            return 1
+    except:
+        #print("An exception occurred in attacking")
+        return 0
+
 
 """*********************************************************************
 *! \fn          check_ship(dock)
@@ -492,9 +516,7 @@ def wait_unilt_ship_rdy(dock):
 *  \exception   none
 *  \return      none
 *********************************************************************"""
-def check_ship(dock, check_cargo_full):
-    if check_cargo_full==0:
-        return 0
+def check_ship(dock):
     pos = confirm_region('./picture/cargo_full.png', 0.17, region_dock1_no_chat)
     if pos:
         # send home
