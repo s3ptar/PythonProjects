@@ -18,7 +18,7 @@ from pywinauto import keyboard
 import numpy as np
 from windowcapture import WindowCapture
 import cv2 as cv
-
+import logging_lib
 """*********************************************************************
 * Informations
 *********************************************************************"""
@@ -347,6 +347,9 @@ def prepare_attacking():
     pyautogui.scroll(-8000)  # scroll out
     return
 
+def test_log():
+    logging_lib.logging_msg(msg="test")
+
 """*********************************************************************
 *! \fn          attacking(target_setup, next_target)
 *  \brief       attaking until task empty
@@ -496,7 +499,7 @@ def attacking(target_list, next_target = 1, threshold = 0.1):
         elif target_class == "miner":
             confirm_path = './picture/hostiles/confirm_miner.png'
         else:
-            print("no target")
+            #print("no target")
             return 0
         #check target and attcack
         pos = confirm_screen(confirm_path, 0.1, )

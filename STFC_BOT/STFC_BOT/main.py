@@ -23,6 +23,7 @@ from pywinauto.keyboard import send_keys
 # import keyboard
 from threading import Thread
 import threading
+import logging_lib
 
 """*********************************************************************
                 Constant
@@ -37,6 +38,8 @@ pos_close_chat_btn = (500, 20)
 pos_repair_screen_btn = (1200, 540)
 pos_battle_screen_btn = (1860, 850)
 
+
+
 dummy = 0
 
 """*********************************************************************
@@ -44,6 +47,7 @@ dummy = 0
 *********************************************************************"""
 current_state = "init"
 next_state = "init"
+prev_state = "init"
 target_count = 0
 enable_battle_screen = 0
 no_target_cnt = 0
@@ -51,11 +55,13 @@ retry_target_cnt = 0
 start_time = time.time()
 user_interaction = threading.Semaphore(1)
 bl_rist_time_rep = 0
-
+var_step_error_cnt = 0
+sum_of_loops = 0
+loops = 1
 """*********************************************************************
                 mantis
 *********************************************************************"""
-json_config_data_mantis = """
+json_config_data_matis = """
     [
     {
     "target_system" : "yunke",
@@ -65,8 +71,8 @@ json_config_data_mantis = """
         "explorer":0,
         "miner":0
     }],
-    "num_of_target_kills":40,
-    "num_of_repeats": 2,
+    "num_of_target_kills":50,
+    "num_of_repeats": 4,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 }
@@ -97,24 +103,6 @@ json_config_data_swarm = """
 
 *********************************************************************"""
 
-json_config_data_ = """
-    [
-{
-    "target_system" : "intello",
-    "target_list":[{
-        "battleship":1,
-        "interceptor":1,
-        "explorer":1,
-        "miner":0
-    }],
-    "num_of_target_kills":100,
-    "num_of_repeats": 1,
-    "closed_kill_enable":1,
-    "cargo_modus_enabled":1
-}
-
-]
-"""
 
 json_config_data_4g = """
     [
@@ -152,26 +140,36 @@ json_config_data_sipra = """
 ]
 """
 
-json_config_data__ = """
+
+
+json_config_data_save = """
     [
 {
-    "target_system" : "timvir", 
+    "target_system" : "mullins",
     "target_list":[{
         "battleship":1,
         "interceptor":0,
         "explorer":0,
-        "miner":1
+        "miner":0
     }],
-    "num_of_target_kills":100,
-    "num_of_repeats": 3,
+    "num_of_target_kills":220,
+    "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
-}
-]
-"""
-
-json_config_data_day = """
-    [
+}, 
+{
+    "target_system" : "johbacor",
+    "target_list":[{
+        "battleship":1,
+        "interceptor":0,
+        "explorer":0,
+        "miner":0
+    }],
+    "num_of_target_kills":60,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":1
+},
 {
     "target_system" : "Solis Omega",
     "target_list":[{
@@ -206,8 +204,8 @@ json_config_data_day = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":20,
-    "num_of_repeats": 1,
+    "num_of_target_kills":22,
+    "num_of_repeats": 2,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 },
@@ -219,7 +217,7 @@ json_config_data_day = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":75,
+    "num_of_target_kills":2,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
@@ -233,31 +231,48 @@ json_config_data_day = """
         "miner":0
     }],
     "num_of_target_kills":18,
-    "num_of_repeats": 4,
+    "num_of_repeats": 2,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 },
    {
     "target_system" : "Cirriped",
     "target_list":[{
-        "battleship":0,
-        "interceptor":1,
+        "battleship":1,
+        "interceptor":0,
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":5,
+    "num_of_target_kills":25,
     "num_of_repeats": 2,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 }
 ]
 """
+json_config_data_egal = """
+    [
+{
+    "target_system" : "Mirror Dhi'Ban",
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":1
+    }],
+    "num_of_target_kills":200,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":1
+}
+]
+"""
 
-json_config_data = """
+json_config_data_4g_vessel = """
     [
 
 {
-    "target_system" : "romulus",
+    "target_system" : "sol",
     "target_list":[{
         "battleship":0,
         "interceptor":1,
@@ -275,7 +290,7 @@ json_config_data = """
 """*********************************************************************
                 borg
 *********************************************************************"""
-json_config_data_borg = """
+json_config_data_bo = """
     [{
     "target_system" : "jovia", 
     "target_list":[{
@@ -315,7 +330,7 @@ json_config_data_f = """
 """*********************************************************************
                 beta sector  - data pads
 *********************************************************************"""
-json_config_data_datapads = """
+json_config_data_pads = """
     [{
     "target_system" : "beta-sektor", 
     "target_list":[{
@@ -372,21 +387,9 @@ json_config_data_fatu = """
 ]
 """
 
-json_config_data_faction = """
+json_config_data_fac = """
     [
-    {
-    "target_system" : "Solis Omega",
-    "target_list":[{
-        "battleship":1,
-        "interceptor":1,
-        "explorer":1,
-        "miner":0
-    }],
-    "num_of_target_kills":40,
-    "num_of_repeats": 1,
-    "closed_kill_enable":1,
-    "cargo_modus_enabled":1
-},
+
 {
     "target_system" : "mullins",
     "target_list":[{
@@ -395,8 +398,8 @@ json_config_data_faction = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":40,
-    "num_of_repeats": 1,
+    "num_of_target_kills":75,
+    "num_of_repeats": 5,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 },
@@ -408,10 +411,30 @@ json_config_data_faction = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":40,
+    "num_of_target_kills":60,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
+}
+]
+"""
+
+
+#gorn
+json_config_data_gorn = """
+    [
+    {
+    "target_system" : "dendroa",
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":40,
+    "num_of_repeats": 3,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":0
 }
 ]
 """
@@ -474,6 +497,12 @@ def loop_fun():
 
 __name__ == '__main__'
 
+
+#try close and reboot
+#navigation.restart_game()
+
+
+
 abortKey = 'ctrl_l'
 listener = keyboard.Listener(on_press=on_press, abortKey=abortKey)
 listener.start()  # start to listen on a separate thread
@@ -486,14 +515,23 @@ listener.start()  # start to listen on a separate thread
 # Doing this because I'll be putting the files from each video in their own folder on GitHub
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+#attacking.test_log()
+#logging_lib.logging_msg(msg="test")
+
 print("chat close")
 navigation.close_chat_window()
 print("repair")
 # navigation.repair_ship(1)
 
 
+
 print("start task")
 task_data = json.loads(json_config_data)
+
+for item in task_data:
+    mycnt = item['num_of_repeats']
+    sum_of_loops += mycnt
+
 for task_item in task_data:
 
     current_state = "send_to_system"
@@ -510,12 +548,44 @@ for task_item in task_data:
                 print("user pausing .. press ctrl links for ")
 
         sleep(1)
+        #detect next states
+        prev_state = current_state
         current_state = next_state
+
+        # no change
+        if prev_state == current_state:
+            var_step_error_cnt = var_step_error_cnt + 1
+            #print("Looperror : {no_of_error}".format(no_of_error=var_step_error_cnt))
+        else:
+            var_step_error_cnt = 0
+
+        rt_time = (time.time() - start_time) / 60
+        if rt_time >= 500:
+            navigation.close_game()
+            sys.exit("Stop after 400min")
+
+        #print status
+        print("Status Report: State : {task_current_state}, System : {activ_system}, StepError : {error_progr}, "
+              "target: {trg_cnt} / todo : {trg_to_do}, Run : {loop_cnt} : Runs {all_repeats},  "
+              "runtime : {rt_time_min:3.0f}min".format(
+                error_progr=var_step_error_cnt,
+                task_current_state=current_state,
+                activ_system=task_item["target_system"],
+                trg_cnt=target_cnt,
+                trg_to_do=task_item["num_of_target_kills"],
+                loop_cnt=loops,
+                all_repeats=sum_of_loops,
+                rt_time_min=rt_time))
+        # print("Killed Target : {kills} / {kills_to_go} - runtime : {rt_time_min:3.0f}min".format(
+        #    kills=target_cnt, kills_to_go=task_item["num_of_target_kills"], rt_time_min=rt_time))
+
+
+
         """
         Start sending ship out in space
         """
         if current_state == "send_to_system":
-            print("send to system " + task_item["target_system"])
+            #print("send to system " + task_item["target_system"])
             return_val = navigation.send_to_system(task_item["target_system"], 1)
             fighting_mode = 1
             if return_val:
@@ -526,6 +596,7 @@ for task_item in task_data:
                 sleep(10)
 
         if current_state == "wait_for_ship_arrive_system":
+            sleep(120)
             return_val = navigation.wait_unilt_ship_rdy(1)
             if return_val > 0 & return_val < 99:
                 next_state = "attack_targets"
@@ -544,16 +615,15 @@ for task_item in task_data:
                 no_target_cnt = 0
                 next_state = "wait_for_ship_finish_attack"
                 rt_time = (time.time() - start_time) / 60
-                print("Killed Target : {kills} / {kills_to_go} - runtime : {rt_time_min:3.0f}min".format(
-                    kills=target_cnt, kills_to_go=task_item["num_of_target_kills"], rt_time_min=rt_time))
-                if rt_time >= 400:
-                    sys.exit("Stop after 400min")
+                #print("Killed Target : {kills} / {kills_to_go} - runtime : {rt_time_min:3.0f}min".format(
+                #    kills=target_cnt, kills_to_go=task_item["num_of_target_kills"], rt_time_min=rt_time))
+
             else:
                 no_target_cnt += 1
                 # no_target_cnt = 0
                 threshold = threshold + 0.02
 
-                print(f'no target, threshold = {threshold}')
+                #print(f'no target, threshold = {threshold}')
 
                 if retry_target_cnt > 10:
                     retry_target_cnt = 0
@@ -584,6 +654,9 @@ for task_item in task_data:
             if return_val:
                 if ((target_cnt >= task_item["num_of_target_kills"])):
                     # send ship home
+                    sleep(2)
+                    send_keys('%m')
+                    send_keys('%m')
                     send_keys('%m')
                     next_state = "send_ship_home"
                 elif navigation.check_ship(1, task_item["cargo_modus_enabled"]):
@@ -592,10 +665,14 @@ for task_item in task_data:
                     next_state = "attack_targets"
 
         if current_state == "send_ship_home":
+            sleep(120)
             return_val = navigation.wait_unilt_ship_rdy(1)
             if return_val:
                 next_state = "repair_ship"
             else:
+                sleep(2)
+                send_keys('%m')
+                send_keys('%m')
                 send_keys('%m')
             sleep(4)
 
@@ -606,8 +683,9 @@ for task_item in task_data:
             if return_val:
                 next_state = "send_to_system"
                 repeat_loops -= 1
+                loops = loops + 1
                 bl_rist_time_rep = 0
 
 
 
-
+navigation.close_game()

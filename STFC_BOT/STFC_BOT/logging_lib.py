@@ -12,12 +12,14 @@
 * Includes
 *********************************************************************"""
 
-from enum import Enum
+import inspect
+import string
 
 """*********************************************************************
 * Informations
 *********************************************************************"""
 # https://os.mbed.com/platforms/FRDM-K64F/#board-pinout
+#https://stackoverflow.com/questions/13552907/way-to-pass-multiple-parameters-to-a-function-in-python
 """*********************************************************************
 * Declarations
 *********************************************************************"""
@@ -26,10 +28,12 @@ from enum import Enum
 * Constant
 *********************************************************************"""
 
+logging_level_list = ["Error", "Warning", "Info", "Debug", "Verbose"]
+
 """*********************************************************************
 * Global Variable
 *********************************************************************"""
-
+default_log_lvl = 2
 """*********************************************************************
 * local Variable
 *********************************************************************"""
@@ -51,11 +55,21 @@ from enum import Enum
 *  \exception   none
 *  \return      none
 *********************************************************************"""
-def debug_msg(message, loglvl = 0):
+def logging_msg(*args, **kwargs):
 
-    if loglvl >= 1:
-        print(message)
-        return 0
-    elif loglvl >= 0:
-        print(message)
-        return 0
+    lvl_info = logging_level_list[default_log_lvl]
+    log_msg = ""
+
+    #check if available
+    try:
+        len(kwargs["lvl"])
+    except:
+        lvl_info = logging_level_list[default_log_lvl]
+    else:
+        lvl_info = kwargs["lvl"]
+
+    call_fct = (inspect.stack()[1].filename).split('\\')[-1] + " -> " + inspect.stack()[1].function
+    #check if string , than print
+    if isinstance(kwargs["msg"],str):
+
+        print(lvl_info + ", " + call_fct + ", " + kwargs["msg"])

@@ -18,7 +18,7 @@ from pywinauto import keyboard
 import numpy as np
 from windowcapture import WindowCapture
 import cv2 as cv
-
+from subprocess import call
 """*********************************************************************
 * Informations
 *********************************************************************"""
@@ -306,7 +306,7 @@ def close_chat_window():
     move_mouse(mouse_pos_top)
     pos = confirm_screen("./picture/chat_side_close.png", 0.1)
     if pos:
-        print("close chat windows")
+        #print("close chat windows")
         move_mouse_position(pos[0])
 
 """*********************************************************************
@@ -320,6 +320,7 @@ def close_chat_window():
 def repair_ship(dock, repair_first_time):
     repair_need = 0
     return_value = 0
+    keyboard.send_keys('%m')
     #keyboard.send_keys('{VK_F2}')
     if not repair_first_time:
         select_dock(dock)
@@ -327,7 +328,7 @@ def repair_ship(dock, repair_first_time):
     #check if ship need repair
     ##move_mouse(mouse_pos_top)
     #hit repair button if exists
-    print ("check repair")
+    #print ("check repair")
     pos = confirm_screen("./picture/dock_state_repair_btn.png", 0.01,1)
     if pos:
         move_mouse_position(pos[0])
@@ -335,6 +336,11 @@ def repair_ship(dock, repair_first_time):
         return 0
 
     pos = confirm_screen("./picture/gratis_repair.png", 0.1)
+    if pos:
+        move_mouse_position(pos[0])
+        return 1
+
+    pos = confirm_screen("./picture/gratis_repair_5min.png", 0.1,1)
     if pos:
         move_mouse_position(pos[0])
         return 1
@@ -417,6 +423,10 @@ def send_to_system(system_name, dock):
     pos = confirm_screen('./picture/setze_kurs.png', 0.2,1 )
     if pos:
         move_mouse_position(pos[0])
+        #check gorn
+        pos = confirm_screen('./picture/setze_kurs_gon.png', 0.17)
+        if pos:
+            move_mouse_position(pos[0])
         return 1
         #no token systen. send to bekannte systeme
     #move_mouse_position((800, 500))
@@ -428,6 +438,7 @@ def send_to_system(system_name, dock):
         pos = confirm_screen('./picture/setze_kurs_token_route.png', 0.17)
         if pos:
             move_mouse_position(pos[0])
+
         return 1
 
     else:
@@ -502,3 +513,32 @@ def check_ship(dock, check_cargo_full):
         return 1
     else:
         return 0
+
+
+"""*********************************************************************
+*! \fn          restart_game()
+*  \brief       restat game
+*  \param       none
+*  \exception   none
+*  \return      none
+*********************************************************************"""
+def restart_game():
+    close_game()
+    call(r"C:\Games\Star Trek Fleet Command\STFC\default\game\prime.exe")
+    sleep(240)
+    pos = confirm_screen('./picture/timeout_after_restart.png', 0.17)
+    if pos:
+        pos = confirm_screen('./picture/quittierung_timeout.png', 0.17)
+        if pos:
+            move_mouse_position(pos[0])
+
+"""*********************************************************************
+*! \fn          close_game()
+*  \brief       restat game
+*  \param       none
+*  \exception   none
+*  \return      none
+*********************************************************************"""
+def close_game():
+    move_mouse_position((1899,12),y_offset=-30)
+    sleep(60)
