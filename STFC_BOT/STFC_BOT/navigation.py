@@ -19,6 +19,7 @@ import numpy as np
 from windowcapture import WindowCapture
 import cv2 as cv
 from subprocess import call
+import threading
 """*********************************************************************
 * Informations
 *********************************************************************"""
@@ -329,6 +330,7 @@ def repair_ship(dock, repair_first_time):
     ##move_mouse(mouse_pos_top)
     #hit repair button if exists
     #print ("check repair")
+    select_dock(dock)
     pos = confirm_screen("./picture/dock_state_repair_btn.png", 0.01,1)
     if pos:
         move_mouse_position(pos[0])
@@ -375,7 +377,11 @@ def repair_ship(dock, repair_first_time):
         move_mouse_position(repair_speed_up_pos)
         return 0
 
-    return 1
+    pos = confirm_screen("./picture/dock_state_ship_in_dock.png", 0.05, 1)
+    if pos:
+        return 1
+
+    return 0
 
 
 
@@ -490,7 +496,7 @@ def wait_unilt_ship_rdy(dock):
     #Dock 1 abwählen
     #keyboard.send_keys('%1')
     #center schiff
-    #keyboard.send_keys('{SPACE}')
+    keyboard.send_keys('{SPACE}')
     #keyboard.send_keys('%')
     #print("schiff stop moving")
     return return_value
@@ -522,13 +528,15 @@ def check_ship(dock, check_cargo_full):
 *  \exception   none
 *  \return      none
 *********************************************************************"""
+
 def restart_game():
     close_game()
-    call(r"C:\Games\Star Trek Fleet Command\STFC\default\game\prime.exe")
-    sleep(240)
-    pos = confirm_screen('./picture/timeout_after_restart.png', 0.17)
+    x = threading.Thread(target=start_game, args=())
+    x.start()
+    sleep(120)
+    pos = confirm_screen('./picture/missclick/timeout_after_restart.png', 0.17)
     if pos:
-        pos = confirm_screen('./picture/quittierung_timeout.png', 0.17)
+        pos = confirm_screen('./picture/missclick/quittierung_timeout.png', 0.17)
         if pos:
             move_mouse_position(pos[0])
 
@@ -542,3 +550,13 @@ def restart_game():
 def close_game():
     move_mouse_position((1899,12),y_offset=-30)
     sleep(60)
+
+"""*********************************************************************
+*! \fn          start_game()
+*  \brief       start game
+*  \param       none
+*  \exception   none
+*  \return      none
+*********************************************************************"""
+def start_game():
+    call(r"C:\Games\Star Trek Fleet Command\STFC\default\game\prime.exe")
