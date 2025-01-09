@@ -1,6 +1,6 @@
 {
-  "token": "JlN-ufgwWEynoG_KPdYpG3_V6vWec0AvaJYms5Te5ramaTwu8QDaqhsT_BuReGGhWiQRZ6jBughWhLAxaJI-9g==",
-  "org" : "homedeb",
-  "url" : "http://homedeb.local:8086",
-  "bucket" : "finanz"
+  "token": "bla",
+  "org" : "org",
+  "url" : "http://localhost.local:8086",
+  "bucket" : "bucket"
 }
