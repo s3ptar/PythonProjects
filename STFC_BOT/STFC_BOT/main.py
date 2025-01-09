@@ -96,7 +96,7 @@ json_config_data_swarm = """
 *********************************************************************"""
 
 
-json_config_data_4g = """
+json_config_load_siis = """
     [
 {
     "target_system" : "sivis", 
@@ -107,8 +107,8 @@ json_config_data_4g = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":52,
-    "num_of_repeats": 4,
+    "num_of_target_kills":100,
+    "num_of_repeats": 2,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 }
@@ -136,7 +136,7 @@ json_config_data_sipra = """
 
 
 
-json_config_data = """
+json_config_load = """
     [
 {
     "target_system" : "Solis Omega",
@@ -215,11 +215,11 @@ json_config_data_egal = """
 ]
 """
 
-json_config_data_4g_vessel = """
+json_config_load_4gvessel = """
     [
 
 {
-    "target_system" : "sol",
+    "target_system" : "romulus",
     "timeout_fly_to_sys" : 60,
     "target_list":[{
         "battleship":0,
@@ -227,7 +227,7 @@ json_config_data_4g_vessel = """
         "explorer":0,
         "miner":1
     }],
-    "num_of_target_kills":75,
+    "num_of_target_kills":80,
     "num_of_repeats": 4,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
@@ -280,7 +280,7 @@ json_config_data_f = """
 """*********************************************************************
                 beta sector  - data pads
 *********************************************************************"""
-json_config_load = """
+json_config_load_beta = """
     [{
     "target_system" : "beta-sektor", 
     "timeout_fly_to_sys" : 90,
@@ -356,7 +356,7 @@ json_config_data_fac = """
 
 
 #gorn
-json_config_data_gorn = """
+json_config_load_gorn = """
     [
     {
     "target_system" : "dendroa",
@@ -367,8 +367,8 @@ json_config_data_gorn = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":40,
-    "num_of_repeats": 3,
+    "num_of_target_kills":50,
+    "num_of_repeats": 5,
     "closed_kill_enable":1,
     "cargo_modus_enabled":0
 }
@@ -474,7 +474,7 @@ def worker(json_config_data=None):
                 navigation.restart_game()
 
             rt_time = (time.time() - start_time) / 60
-            if rt_time >= 500:
+            if rt_time >= 300:
                 navigation.close_game()
                 sys.exit("Stop after 400min")
 

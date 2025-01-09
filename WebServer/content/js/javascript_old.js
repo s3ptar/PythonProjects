@@ -1,0 +1,353 @@
+/***********************************************************************
+*! \file:                   javascript.js
+*  \projekt:                webserial
+*  \created on:             2023 10 15
+*  \author:                 R. Gräber
+*  \version:                0
+*  \history:                -
+*  \brief
+***********************************************************************/
+
+
+/***********************************************************************
+* Includes
+***********************************************************************/
+
+/***********************************************************************
+* Informations
+***********************************************************************/
+//https://www.dyclassroom.com/c/c-pointers-and-two-dimensional-array
+/***********************************************************************
+* Declarations
+***********************************************************************/
+
+
+/***********************************************************************
+* Constant
+***********************************************************************/
+
+
+/***********************************************************************
+* Global Variable
+***********************************************************************/
+
+
+/***********************************************************************
+* local Variable
+***********************************************************************/
+
+
+/***********************************************************************
+* Constant
+***********************************************************************/
+
+/***********************************************************************
+* Local Funtions
+***********************************************************************/
+
+/***********************************************************************
+*! \fn          function getData()
+*  \brief       get data from server
+*  \param       number
+*  \exception   none
+*  \return      number with leading
+ ***********************************************************************/
+function getData() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+			const obj = JSON.parse(this.responseText);
+			document.getElementById("ADCValue").innerHTML = obj.data;
+        }
+    };
+    xhttp.open("GET", "readADC", true);
+    xhttp.send();
+}
+
+/***********************************************************************
+*! \fn          function leadingzero (number)
+*  \brief       set leading zero to numer
+*  \param       number
+*  \exception   none
+*  \return      number with leading
+ ***********************************************************************/             
+function leadingzero (number) {
+    return (number < 10) ? '0' + number : number;
+}
+
+/***********************************************************************
+*! \fn          int16_t create_fb(char *dataPtr, byte *fb)
+*  \brief       reset the Framebuffer
+*  \param       dataPtr String to scroll across
+*  \param       fb Pointer to the frame buffer array
+*  \exception   none
+*  \return      length of frame buffer
+***********************************************************************/             
+function ShowDateAndTime(){
+
+    var today = new Date();
+    var month = today.getMonth();
+    var day = today.getDay();
+    var year = today.getFullYear();
+    var hour = today.getHours();
+    var minute = today.getMinutes();
+    var seconds = today.getSeconds();
+    const options_date = {year: 'numeric', month: 'long', day: 'numeric' };
+		const options_weekday = { weekday: 'long' };
+    //document.getElementById('id_alarm_browser_width').innerHTML = 'Browser Height = ' + window.innerHeight;
+    //document.getElementById('id_alarm_browser_heigth').innerHTML = 'Browser Width = ' + window.innerWidth;
+    document.getElementById('id_header_date').innerHTML = today.toLocaleDateString('de-DE', options_date);
+    document.getElementById('id_header_day_and_time').innerHTML = today.toLocaleDateString('de-DE', options_weekday) +" " + leadingzero(hour) + ':' + leadingzero(minute) + ":" + leadingzero(seconds);
+    document.getElementById('id_header_user').innerHTML = "none";
+}
+ 
+ /***********************************************************************
+*! \fn          function Start(status)
+*  \brief       AFTER PAGE LOADS CALL YOUR SCRIPTS HERE
+*  \param       status - status from page load dunction
+*  \exception   none
+*  \return      none
+***********************************************************************/   
+function Start(status) {
+
+    // In most modern browsers the console should return:
+    // "Browser Loader : Document : DOMContentLoaded : interactive"
+    console.log(status);
+    //Start Date and Time
+    setInterval(ShowDateAndTime, 1000);
+	setInterval(getData, 2000);
+    // add your script calls here...
+    //hide all elements, expect home
+    content_selector("id_content_home");
+    
+    if ("serial" in navigator) {
+        const notSupported = document.getElementById("notSupported");
+        notSupported.style.display = "none";
+	}
+    
+    navigator.serial.getPorts().then((ports) => {
+    // Initialize the list of available ports with `ports` on page load.
+        console.log("ports");
+        console.log(ports);
+    });
+	
+	fct_initialization();
+	
+    
+}
+ 
+/***********************************************************************
+*! \fn          fct_initialization()
+*  \brief       init page content
+*  \param       none
+*  \exception   none
+*  \return      none
+***********************************************************************/   
+function fct_initialization() {
+	
+	fct_WebSerial_initialization();
+
+}
+
+/***********************************************************************
+*! \fn          content_selector(content_id) 
+*  \brief       hide and shows content
+*  \param       content_id - content to display
+*  \exception   none
+*  \return      none
+***********************************************************************/   
+function content_selector(content_id) {
+
+    console.log(content_id);
+    //hide all elements
+    var divsToHide = document.getElementsByClassName("cl_content_element");
+	  for (var i = 0; i < divsToHide.length; i++) {
+        //divsToHide[i].style.visibility = "hidden"; // or
+        divsToHide[i].style.display = "none"; // depending on what you're doing
+    }
+    document.getElementById(content_id).style.display = "block";
+    
+}
+
+/***********************************************************************
+*! \fn          page load
+*  \brief       JAVASCRIPT PAGE LOADER
+*  \author      Stokely Web Page loader, 2022
+*  \param       none
+*  \exception   none
+*  \return      status from loaded page
+***********************************************************************/ 
+if (document.readyState) {
+
+    if (document.readyState === "complete" || document.readyState === "loaded") {
+
+        Start("Browser Loader : Document : readyState : complete");
+
+    } else {
+       if (window.addEventListener) {
+
+            // Never try and call 'DOMContentLoaded' unless the web page is still in an early loading state.
+            if (document.readyState === 'loading' || document.readyState === 'uninitialized') {
+                window.addEventListener('DOMContentLoaded', function () {
+
+                // Most modern browsers will have the DOM ready after this state.
+                if (document.readyState === "interactive") {
+                    Start("Browser Loader : Document : DOMContentLoaded : interactive");
+
+                    } else if (document.readyState === "complete" || document.readyState === "loaded") {
+                        Start("Browser Loader : Document : DOMContentLoaded : complete");
+                    } else {
+                        Start("Browser Loader : Document : DOMContentLoaded : load");
+                    }
+                }, false);
+            } else {
+// FALLBACK LOADER : If the readyState is late or unknown, go ahead and try and wait for a full page load event. Note: This function below was required for Internet Explorer 9-10 to work because of non-support of some readyState values! IE 4-9 only supports a "readyState" of "complete".
+                if (document.readyState === 'complete' || document.readyState === "loaded") {
+                    Start("Browser Loader : Document : readyState : complete");
+                } else {
+                    window.addEventListener('load', function () {
+                        Start('Browser Loader : Window : Event : load');
+                    }, false);
+                }
+            }
+        // If 'addEventListener' is not be supported in the browser, try the 'onreadystate' event. Some browsers like IE have poor support for 'addEventListener'.
+        } else {
+            // Note: document.onreadystatechange may have limited support in some browsers.
+            if (document.onreadystatechange) {
+                document.onreadystatechange = function () {
+                    if (document.readyState === "complete" || document.readyState === "loaded"){
+                        Start("Browser Loader : Document : onreadystatechange : complete");
+                    } 
+                    // OPTIONAL: Because several versions of Internet Explorer do not support "interactive" or get flagged poorly, avoid this call when possible.
+                    //else if (document.readyState === "interactive") {
+                    //Start("Browser Loader : Document : onreadystatechange : interactive");
+                    //}
+                }
+            } else {
+            // Note: Some browsers like IE 3-8 may need this more traditional version of the loading script if they fail to support "addeventlistener" or "onready             state". "window.load" is a very old and very reliable page loader you should always fall back on.
+                window.onload = function() {
+                    Start("Browser Loader : Window : window.onload (2)");
+                };
+            }
+        }
+    }
+} else {
+    // LEGACY FALLBACK LOADER. If 'document.readyState' is not supported, use 'window.load'. It has wide support in very old browsers as well as all modern ones.     Browsers Firefox 1-3.5, early Mozilla, Opera < 10.1, old Safari, and some IE browsers do not fully support 'readyState' or its values. "window.load" is a very     old and very reliable page loader you should always fall back on.
+    window.onload = function () {
+        Start("Browser Loader : Window : window.onload (1)");
+    };
+}
+
+
+
+/*****************************************************************************************/
+
+/***********************************************************************
+*! \file:                   javascript.js
+*  \projekt:                webserial
+*  \created on:             2023 10 15
+*  \author:                 R. Gräber
+*  \version:                0
+*  \history:                -
+*  \brief
+***********************************************************************/
+
+
+/***********************************************************************
+* Includes
+***********************************************************************/
+
+/***********************************************************************
+* Informations
+***********************************************************************/
+//https://www.dyclassroom.com/c/c-pointers-and-two-dimensional-array
+/***********************************************************************
+* Declarations
+***********************************************************************/
+
+
+/***********************************************************************
+* Constant
+***********************************************************************/
+
+
+/***********************************************************************
+* Global Variable
+***********************************************************************/
+
+
+/***********************************************************************
+* local Variable
+***********************************************************************/
+
+
+/***********************************************************************
+* Constant
+***********************************************************************/
+
+
+/***********************************************************************
+* Local Funtions
+***********************************************************************/
+
+/***********************************************************************
+*! \fn          WebSerialBTNclickConnect()
+*  \brief       event handler for btn connect to serial
+*  \param       none
+*  \exception   none
+*  \return      none
+***********************************************************************/  
+async function WebSerialBTNclickConnect() {
+  if (espStub) {
+    await espStub.disconnect();
+    await espStub.port.close();
+    toggleUIConnected(false);
+    espStub = undefined;
+    return;
+  }
+
+  try {
+    await esploader.initialize();
+
+    logMsg("Connected to " + esploader.chipName);
+    logMsg("MAC Address: " + formatMacAddr(esploader.macAddr()));
+
+    espStub = await esploader.runStub();
+    toggleUIConnected(true);
+    toggleUIToolbar(true);
+    espStub.addEventListener("disconnect", () => {
+      toggleUIConnected(false);
+      espStub = false;
+    });
+  } catch (err) {
+    throw err;
+  }
+}
+
+/***********************************************************************
+*! \fn          fct_WebSerial_initialization()
+*  \brief       init webserial
+*  \param       none
+*  \exception   none
+*  \return      none
+***********************************************************************/   
+function fct_WebSerial_initialization() {
+	
+	const butSerialConnect = document.getElementById("butSerialConnect");
+	butSerialConnect.addEventListener("click", () => {
+        WebSerialBTNclickConnect().catch(async (e) => {
+            console.error(e);
+            errorMsg(e.message || e);
+            //toggleUIConnected(false);
+        });
+    });
+	
+}
+
+
+
+
+
+
+/*****************************************************************************************/
+

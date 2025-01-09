@@ -1,67 +1,162 @@
+default_dataset = [
+        {
+            "target_system" : "volvo",
+    				"timeout_fly_to_sys" : 120,
+    				"target_list":[{
+        				"battleship":1,
+        				"interceptor":1,
+        				"explorer":1,
+        				"miner":0
+    	}],
+    	"num_of_target_kills":52,
+      "num_of_repeats": 4,
+    	"closed_kill_enable":1,
+    	"cargo_modus_enabled":1,
+      "task_enable":1
+		},
+    {
+            "target_system" : "saab",
+    				"timeout_fly_to_sys" : 120,
+    				"target_list":[{
+        				"battleship":1,
+        				"interceptor":0,
+        				"explorer":1,
+        				"miner":1
+    	}],
+    	"num_of_target_kills":52,
+      "num_of_repeats": 6,
+    	"closed_kill_enable":1,
+    	"cargo_modus_enabled":1,
+      "task_enable":0
+		},
+];
+
+var glb_var_tasknum;
 /***********************************************************************
-*! \file:                   javascript.js
-*  \projekt:                webserial
-*  \created on:             2023 10 15
-*  \author:                 R. Gräber
-*  \version:                0
-*  \history:                -
-*  \brief
-***********************************************************************/
-
-
-/***********************************************************************
-* Includes
-***********************************************************************/
-
-/***********************************************************************
-* Informations
-***********************************************************************/
-//https://www.dyclassroom.com/c/c-pointers-and-two-dimensional-array
-/***********************************************************************
-* Declarations
-***********************************************************************/
-
-
-/***********************************************************************
-* Constant
-***********************************************************************/
-
-
-/***********************************************************************
-* Global Variable
-***********************************************************************/
-
-
-/***********************************************************************
-* local Variable
-***********************************************************************/
-
-
-/***********************************************************************
-* Constant
-***********************************************************************/
-
-/***********************************************************************
-* Local Funtions
-***********************************************************************/
-
-/***********************************************************************
-*! \fn          function getData()
-*  \brief       get data from server
-*  \param       number
+*! \fn          function LoadData(Tab)
+*  \brief       load data into tab
+*  \param       evt - event
 *  \exception   none
-*  \return      number with leading
- ***********************************************************************/
-function getData() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-			const obj = JSON.parse(this.responseText);
-			document.getElementById("ADCValue").innerHTML = obj.data;
+*  \return      length of frame buffer
+***********************************************************************/
+function LoadData(Tab){
+
+    var tasknum = 0;
+    switch(Tab){
+        case 'Task1':
+            tasknum = 0;
+            break;
+        case 'Task2':
+            tasknum = 1;
+            break;
+        case 'Task3':
+            tasknum = 2;
+            break;
+        case 'Task4':
+            tasknum = 3;
+            break;
+        case 'Task5':
+            tasknum = 4;
+            break;
+        case 'Task6':
+            tasknum = 5;
+            break;
+        default:
+            return;
+    }
+    glb_var_tasknum = tasknum;
+
+    document.getElementById("id_num_of_repeats").value = default_dataset[tasknum].num_of_repeats;
+    document.getElementById("id_task_enable").checked  = default_dataset[tasknum].task_enable;
+
+    for (var i = 0; i < document.getElementById("id_system").options.length; i++) {
+        if (document.getElementById("id_system").options[i].text.toLowerCase() == default_dataset[tasknum].target_system.toLowerCase()) {
+            document.getElementById("id_system").options[i].selected = true;
+            break;
         }
-    };
-    xhttp.open("GET", "readADC", true);
-    xhttp.send();
+		}
+    document.getElementById("id_flight_time").value = default_dataset[tasknum].timeout_fly_to_sys;
+
+    document.getElementById("id_num_of_targets").value = default_dataset[tasknum].num_of_target_kills;
+    document.getElementById("id_target_battleship").checked  = default_dataset[tasknum].target_list[0].battleship;
+    document.getElementById("id_target_explorer").checked  = default_dataset[tasknum].target_list[0].interceptor;
+    document.getElementById("id_target_interceptor").checked  = default_dataset[tasknum].target_list[0].explorer;
+    document.getElementById("id_target_miner").checked  = default_dataset[tasknum].target_list[0].miner;
+
+    document.getElementById("id_return_full_cargo").checked  = default_dataset[tasknum].cargo_modus_enabled;
+    document.getElementById("id_closed_target").checked  = default_dataset[tasknum].closed_kill_enable;
+}
+
+/***********************************************************************
+*! \fn          function SaveData(evt)
+*  \brief       save input data to variable
+*  \param       evt - event
+*  \exception   none
+*  \return      length of frame buffer
+***********************************************************************/
+function SaveData(evt){
+
+    var tmp_dataset;
+    tmp_dataset = [
+        {
+            "target_system" : document.getElementById("id_system").value,
+    				"timeout_fly_to_sys" : document.getElementById("id_flight_time").value,
+    				"target_list":[{
+        				"battleship":document.getElementById("id_target_battleship").checked ? 1 : 0,
+        				"interceptor":document.getElementById("id_target_interceptor").checked ? 1 : 0,
+        				"explorer":document.getElementById("id_target_explorer").checked ? 1 : 0,
+        				"miner":document.getElementById("id_target_miner").checked ? 1 : 0,
+    	}],
+    	"num_of_target_kills":document.getElementById("id_num_of_targets").value,
+      "num_of_repeats": document.getElementById("id_num_of_repeats").value,
+    	"closed_kill_enable":document.getElementById("id_closed_target").checked ? 1 : 0,
+    	"cargo_modus_enabled":document.getElementById("id_return_full_cargo").checked ? 1 :0
+		}
+];
+
+ //console.log(tmp_dataset);
+ //console.log(glb_var_tasknum);
+
+    default_dataset[glb_var_tasknum].num_of_repeats = document.getElementById("id_num_of_repeats").value;
+    default_dataset[glb_var_tasknum].task_enable = document.getElementById("id_task_enable").checked;
+
+    default_dataset[glb_var_tasknum].target_system = document.getElementById("id_system").value;
+    default_dataset[glb_var_tasknum].timeout_fly_to_sys = document.getElementById("id_flight_time").value;
+
+    default_dataset[glb_var_tasknum].num_of_target_kills = document.getElementById("id_num_of_targets").value;
+    default_dataset[glb_var_tasknum].target_list[0].battleship = document.getElementById("id_target_battleship").checked;
+    default_dataset[glb_var_tasknum].target_list[0].interceptor = document.getElementById("id_target_explorer").checked;
+    default_dataset[glb_var_tasknum].target_list[0].explorer = document.getElementById("id_target_interceptor").checked;
+    default_dataset[glb_var_tasknum].target_list[0].miner = document.getElementById("id_target_miner").checked;
+
+    default_dataset[glb_var_tasknum].cargo_modus_enabled = document.getElementById("id_return_full_cargo").checked;
+    default_dataset[glb_var_tasknum].closed_kill_enable = document.getElementById("id_closed_target").checked;
+
+}
+
+/***********************************************************************
+*! \fn          openTab(evt, Tab)
+*  \brief       event function
+*  \param       evt - event
+*  \exception   none
+*  \return      length of frame buffer
+***********************************************************************/
+function openTab(evt, Tab) {
+    var i, tabcontent, tablinks;
+
+    if (Tab == "General") {
+        document.getElementById("id_task_div").style.display = "none";
+    }else{
+        document.getElementById("id_task_div").style.display = "block";
+    }
+
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    evt.currentTarget.className += " active";
+    LoadData(Tab);
 }
 
 /***********************************************************************
@@ -70,10 +165,11 @@ function getData() {
 *  \param       number
 *  \exception   none
 *  \return      number with leading
- ***********************************************************************/             
+ ***********************************************************************/
 function leadingzero (number) {
     return (number < 10) ? '0' + number : number;
 }
+
 
 /***********************************************************************
 *! \fn          int16_t create_fb(char *dataPtr, byte *fb)
@@ -82,7 +178,7 @@ function leadingzero (number) {
 *  \param       fb Pointer to the frame buffer array
 *  \exception   none
 *  \return      length of frame buffer
-***********************************************************************/             
+***********************************************************************/
 function ShowDateAndTime(){
 
     var today = new Date();
@@ -92,22 +188,48 @@ function ShowDateAndTime(){
     var hour = today.getHours();
     var minute = today.getMinutes();
     var seconds = today.getSeconds();
-    const options_date = {year: 'numeric', month: 'long', day: 'numeric' };
+    const options_date = {year: 'numeric', month: 'numeric', day: 'numeric' };
 		const options_weekday = { weekday: 'long' };
     //document.getElementById('id_alarm_browser_width').innerHTML = 'Browser Height = ' + window.innerHeight;
     //document.getElementById('id_alarm_browser_heigth').innerHTML = 'Browser Width = ' + window.innerWidth;
-    document.getElementById('id_header_date').innerHTML = today.toLocaleDateString('de-DE', options_date);
-    document.getElementById('id_header_day_and_time').innerHTML = today.toLocaleDateString('de-DE', options_weekday) +" " + leadingzero(hour) + ':' + leadingzero(minute) + ":" + leadingzero(seconds);
-    document.getElementById('id_header_user').innerHTML = "none";
+    var timestr = leadingzero(hour) + ':' + leadingzero(minute) + ":" + leadingzero(seconds) + " " + today.toLocaleDateString('de-DE', options_date);
+    //console.log( today.toLocaleDateString('de-DE', options_date));
+
+
 }
- 
- /***********************************************************************
+
+/***********************************************************************
+*! \fn          get_data_from_srv()
+*  \brief       AFTER PAGE LOADS CALL YOUR SCRIPTS HERE
+*  \param       status - status from page load dunction
+*  \exception   none
+*  \return      none
+***********************************************************************/
+function get_data_from_srv(){
+
+    (async () => {
+  const rawResponse = await fetch('https://localhost:8087/post', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({a: 1, b: 'Textual content'})
+  });
+  const content = await rawResponse.json();
+
+  console.log(content);
+})();
+    }
+
+
+/***********************************************************************
 *! \fn          function Start(status)
 *  \brief       AFTER PAGE LOADS CALL YOUR SCRIPTS HERE
 *  \param       status - status from page load dunction
 *  \exception   none
 *  \return      none
-***********************************************************************/   
+***********************************************************************/
 function Start(status) {
 
     // In most modern browsers the console should return:
@@ -115,58 +237,17 @@ function Start(status) {
     console.log(status);
     //Start Date and Time
     setInterval(ShowDateAndTime, 1000);
-	setInterval(getData, 2000);
+    setInterval(get_data_from_srv, 10000);
+    //openTab("", "General")
+    document.getElementById("id_task_div").style.display = "none";
+
+    //test function for log tab
+    //setInterval(generate_log_data, 10000);
     // add your script calls here...
     //hide all elements, expect home
-    content_selector("id_content_home");
-    
-    if ("serial" in navigator) {
-        const notSupported = document.getElementById("notSupported");
-        notSupported.style.display = "none";
-	}
-    
-    navigator.serial.getPorts().then((ports) => {
-    // Initialize the list of available ports with `ports` on page load.
-        console.log("ports");
-        console.log(ports);
-    });
-	
-	fct_initialization();
-	
-    
-}
- 
-/***********************************************************************
-*! \fn          fct_initialization()
-*  \brief       init page content
-*  \param       none
-*  \exception   none
-*  \return      none
-***********************************************************************/   
-function fct_initialization() {
-	
-	fct_WebSerial_initialization();
 
-}
 
-/***********************************************************************
-*! \fn          content_selector(content_id) 
-*  \brief       hide and shows content
-*  \param       content_id - content to display
-*  \exception   none
-*  \return      none
-***********************************************************************/   
-function content_selector(content_id) {
 
-    console.log(content_id);
-    //hide all elements
-    var divsToHide = document.getElementsByClassName("cl_content_element");
-	  for (var i = 0; i < divsToHide.length; i++) {
-        //divsToHide[i].style.visibility = "hidden"; // or
-        divsToHide[i].style.display = "none"; // depending on what you're doing
-    }
-    document.getElementById(content_id).style.display = "block";
-    
 }
 
 /***********************************************************************
@@ -176,7 +257,7 @@ function content_selector(content_id) {
 *  \param       none
 *  \exception   none
 *  \return      status from loaded page
-***********************************************************************/ 
+***********************************************************************/
 if (document.readyState) {
 
     if (document.readyState === "complete" || document.readyState === "loaded") {
@@ -217,7 +298,7 @@ if (document.readyState) {
                 document.onreadystatechange = function () {
                     if (document.readyState === "complete" || document.readyState === "loaded"){
                         Start("Browser Loader : Document : onreadystatechange : complete");
-                    } 
+                    }
                     // OPTIONAL: Because several versions of Internet Explorer do not support "interactive" or get flagged poorly, avoid this call when possible.
                     //else if (document.readyState === "interactive") {
                     //Start("Browser Loader : Document : onreadystatechange : interactive");
@@ -239,115 +320,4 @@ if (document.readyState) {
 }
 
 
-
-/*****************************************************************************************/
-
-/***********************************************************************
-*! \file:                   javascript.js
-*  \projekt:                webserial
-*  \created on:             2023 10 15
-*  \author:                 R. Gräber
-*  \version:                0
-*  \history:                -
-*  \brief
-***********************************************************************/
-
-
-/***********************************************************************
-* Includes
-***********************************************************************/
-
-/***********************************************************************
-* Informations
-***********************************************************************/
-//https://www.dyclassroom.com/c/c-pointers-and-two-dimensional-array
-/***********************************************************************
-* Declarations
-***********************************************************************/
-
-
-/***********************************************************************
-* Constant
-***********************************************************************/
-
-
-/***********************************************************************
-* Global Variable
-***********************************************************************/
-
-
-/***********************************************************************
-* local Variable
-***********************************************************************/
-
-
-/***********************************************************************
-* Constant
-***********************************************************************/
-
-
-/***********************************************************************
-* Local Funtions
-***********************************************************************/
-
-/***********************************************************************
-*! \fn          WebSerialBTNclickConnect()
-*  \brief       event handler for btn connect to serial
-*  \param       none
-*  \exception   none
-*  \return      none
-***********************************************************************/  
-async function WebSerialBTNclickConnect() {
-  if (espStub) {
-    await espStub.disconnect();
-    await espStub.port.close();
-    toggleUIConnected(false);
-    espStub = undefined;
-    return;
-  }
-
-  try {
-    await esploader.initialize();
-
-    logMsg("Connected to " + esploader.chipName);
-    logMsg("MAC Address: " + formatMacAddr(esploader.macAddr()));
-
-    espStub = await esploader.runStub();
-    toggleUIConnected(true);
-    toggleUIToolbar(true);
-    espStub.addEventListener("disconnect", () => {
-      toggleUIConnected(false);
-      espStub = false;
-    });
-  } catch (err) {
-    throw err;
-  }
-}
-
-/***********************************************************************
-*! \fn          fct_WebSerial_initialization()
-*  \brief       init webserial
-*  \param       none
-*  \exception   none
-*  \return      none
-***********************************************************************/   
-function fct_WebSerial_initialization() {
-	
-	const butSerialConnect = document.getElementById("butSerialConnect");
-	butSerialConnect.addEventListener("click", () => {
-        WebSerialBTNclickConnect().catch(async (e) => {
-            console.error(e);
-            errorMsg(e.message || e);
-            //toggleUIConnected(false);
-        });
-    });
-	
-}
-
-
-
-
-
-
-/*****************************************************************************************/
 

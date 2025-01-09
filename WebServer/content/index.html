@@ -22,51 +22,78 @@
 
   <body>
 
-    <!--------------------------------------------- Header declaration ------------------------------------------------------------------->
-    <div id="id_header" class="cl_header cl_bars_background">
-    
-        <div id="id_header_left" class="cl_header_left">
-            <p id="id_header_day_and_time"> Wochentag + Zeit </p>
-            <p id="id_header_date"> Datum </p>
-            <p id="id_header_user"> user </p>
-            <p id="id_header_device"> DeviceID </p>        
-        </div>
-        <div id="id_header_center" class="cl_header_center">
-            <h1 id="sitename">
-                Projekt Discription
-            </h1>
-        </div>
-        <div id="id_header_right" class="cl_header_right">
-        
-        </div>
-    
-    </div> 
-    
-    <!--------------------------------------------- Content declaration ------------------------------------------------------------------>
-    
-    <div class="cl_content">
-        <div id="id_content_home" class="cl_content_element">
-            Home
-			<span id="ADCValue">0</span>
-        </div>
-        <div id="id_content_webserial" class="cl_content_element">
-		        <div id="notSupported" class="notSupported">
-                Sorry, <b>Web Serial</b> is not supported on this device, make sure
-                you're running Chrome 89 or later.
-            </div>
-			      <div class="right">
-                <select id="baudRate"></select>
-                <button id="butSerialConnect" type="button">Connect</button>
-            </div>
-        </div>
+<div class="tab">
+    <button class="tablinks active" onclick="openTab(event, 'General')">General</button>
+    <button class="tablinks" onclick="openTab(event, 'Task1')">Task1</button>
+    <button class="tablinks" onclick="openTab(event, 'Task2')">Task2</button>
+    <button class="tablinks" onclick="openTab(event, 'Task3')">Task3</button>
+    <button class="tablinks" onclick="openTab(event, 'Task4')">Task4</button>
+    <button class="tablinks" onclick="openTab(event, 'Task5')">Task5</button>
+    <button class="tablinks" onclick="openTab(event, 'Task6')">Task6</button>
+</div>
 
+<div id="id_task_div">
+    <hr width="100%" />
+    <div class="checkbox">
+        <h3>Allgemein</h3>
+        <input type="checkbox" id="id_task_enable" name="check_task_enable" value="Enable">
+        <label for="id_sys_enable">Task Enable</label>
+        <input type="text" id="id_num_of_repeats" name="id_num_of_repeats">
+        <label for="id_num_of_repeats">Anzahl der Wiederholungen</label>
     </div>
-    
-    <!--------------------------------------------- footer declaration ------------------------------------------------------------------->
-    <div id="id_footer" class="cl_footer cl_bars_background">
-        <a class="active" href="#" onclick="content_selector('id_content_home')"><i class="fa fa-home"></i>Home</a>
-        <a href="#news" onclick="content_selector('id_content_webserial')">WebSerial</a>
-    </div> 
+    <hr width="100%" />
+    <div id="id_checkbox_esystem">
+        <h3>System</h3>
+        <select name="id_system" id="id_system">
+            <option value="volvo">Volvo</option>
+            <option value="saab">Saab</option>
+            <option value="trabbi">Saab</option>
+        </select>
+        <label for="id_system">System</label>
+        <input type="text" id="id_flight_time" name="id_flight_time">
+        <label for="id_flight_time">Flugzeit in Sekunden</label>
+    </div>
+    <hr width="100%" />
+    <div>
+        <h3>Kampf</h3>
+        <input type="text" id="id_num_of_targets" name="id_num_of_targets">
+        <label for="id_num_of_targets">Anzahl der Ziele</label>
+        <input type="checkbox" id="id_target_battleship" name="id_target_battleship" value="Enable">
+        <label for="id_target_battleship">Kampfschiffe</label>
+        <input type="checkbox" id="id_target_explorer" name="id_target_explorer" value="Enable">
+        <label for="id_target_explorer">Forschungsschiffe</label>
+        <input type="checkbox" id="id_target_interceptor" name="id_target_interceptor" value="Enable">
+        <label for="id_target_interceptor">Interceptor</label>
+        <input type="checkbox" id="id_target_miner" name="id_target_miner" value="Enable">
+        <label for="id_target_miner">Miner</label>
+    </div>
+    <hr width="100%" />
+    <div id="id_div_optionen">
+        <h3>Optionen</h3>
+        <input type="checkbox" id="id_return_full_cargo" name="id_return_full_cargo" value="Enable">
+        <label for="id_return_full_cargo">zurück bei vollem Laderaum</label>
+        <input type="checkbox" id="id_closed_target" name="id_closed_target" value="Enable">
+        <label for="id_return_full_cargo">dichtestes Ziel</label>
+    </div>
+    <hr width="100%" />
+    <button onclick="SaveData(event)">Save</button>
+</div>
+
+
+<div id="Task1" class="tabcontent">
+  <h3>Task1</h3>
+  <p>London is the capital city of England.</p>
+</div>
+
+<div id="Paris" class="tabcontent">
+  <h3>Paris</h3>
+  <p>Paris is the capital of France.</p>
+</div>
+
+<div id="Tokyo" class="tabcontent">
+  <h3>Tokyo</h3>
+  <p>Tokyo is the capital of Japan.</p>
+</div>
 
 
   </body>

@@ -43,6 +43,7 @@ searchinput_field_pos = (800,450)
 systemname_field_pos = (800,100)
 pos_location_btn_no_chat = (100, 910)
 pos_attack_btn_no_chat = (1300, 600)
+pos_system_ok_btn = (1335, 140)
 region_dock1_no_chat = (670,910,90,110)
 region_ship_number = (60,640, 150,100)
 """"*********************************************************************
@@ -408,12 +409,13 @@ def send_to_system(system_name, dock):
     sleep(2)
     pyautogui.write(system_name)
     sleep(2)
-    system_path = './picture/systems/' + system_name + '.png'
-    system_path = system_path.replace(" ", "_")
-    pos = confirm_screen(system_path, 0.01)
-    if not pos:
-        return 0
-    move_mouse_position(pos[0])
+    #system_path = './picture/systems/' + system_name + '.png'
+    #system_path = system_path.replace(" ", "_")
+    #pos = confirm_screen(system_path, 0.09,1)
+    #if not pos:
+    #    return 0
+    #move_mouse_position(pos[0])
+    move_mouse_position(pos_system_ok_btn)
     sleep(2)
     # click los button
     move_mouse_position((1001,1007))
@@ -426,7 +428,7 @@ def send_to_system(system_name, dock):
     #click system
     move_mouse_position((960, 519))
     sleep(0.5)
-    pos = confirm_screen('./picture/setze_kurs.png', 0.2,1 )
+    pos = confirm_screen('./picture/setze_kurs.png', 0.01,1 )
     if pos:
         move_mouse_position(pos[0])
         #check gorn

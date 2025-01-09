@@ -108,7 +108,7 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
             
         if self.path == '/readADC':
             #r="{<h1>Hello World</h1>}"
-            r={'data':'test'}
+            r={'data':'test22'}
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.end_headers()

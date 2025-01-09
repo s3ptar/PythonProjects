@@ -1,0 +1,106 @@
+
+/****************************** global declaration **********************************************/
+body {
+    background-color:silver;
+}
+*, *:before, *:after {
+      -moz-box-sizing: border-box;
+	    -webkit-box-sizing: border-box;
+	    box-sizing: border-box;
+	    margin: 0;
+	    padding: 0;
+}
+.cl_bars_background {
+    background: linear-gradient(to bottom, #000000 0%, #000099 100%);  
+    position: fixed !important;
+    position: absolute;
+    overflow: hidden;
+    width: 100vw;
+}
+
+/****************************** Header declaration **********************************************/
+
+.cl_header{
+    /*background:#232729;*/
+    height: 70px;
+	  top: 0px;
+    left: 0;
+    
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.cl_header_left{
+    /*float: left;*/
+	  /*position: absolute;*/
+    font-size: 12px;
+    padding-left: 5px;
+    padding-top: 5px;
+    color: #ffffff;
+    width: 80x;
+}
+
+.cl_header_center{
+    /*float: center;
+	  position: relative;*/
+    color: #ffffff;
+    width: 80vw;
+    text-align: center;
+}
+
+.cl_header_right{
+    /*float: right;
+	  position: absolute;*/
+    font-size: 12px;
+    padding-left: 5px;
+    padding-top: 5px;
+    color: #ffffff;
+    width: 10vw;
+}
+
+/****************************** content declaration **********************************************/
+
+.cl_content{
+     padding-top: 70px;
+    color: black;
+}
+
+.cl_content_element{
+}
+
+
+/****************************** Footer declaration **********************************************/
+
+.cl_footer{
+    /*background:#232729;*/
+    height: 40px;
+	  bottom: 0px;
+    left: 0;
+    
+    position: fixed;
+    width: 100vw;
+}
+
+.cl_footer a {
+    float: left;
+    display: block;
+    color: #cce6ff;
+    text-align: center;
+    padding: 10px 16px;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.cl_footer a:hover {
+    background-color: #b3daff;
+    color: black;
+}
+
+.cl_footer a.active {
+    background-color: #ccccff;
+    color: #000099;
+}
+
+.cl_footer .icon {
+    display: none;
+}
