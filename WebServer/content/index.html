@@ -9,7 +9,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<script src="./content/js/javascript.js"></script>
+	<script src="content/js/javascript.js"></script>
 	<link rel="stylesheet" href="content/css/style.css">
 
     <!-- https://www.w3schools.com/howto/howto_css_fixed_sidebar.asp >
@@ -21,6 +21,7 @@
   </head>
 
   <body>
+
 
 <div class="tab">
     <button class="tablinks active" onclick="openTab(event, 'General')">General</button>
@@ -79,21 +80,33 @@
     <button onclick="SaveData(event)">Save</button>
 </div>
 
+<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
-<div id="Task1" class="tabcontent">
-  <h3>Task1</h3>
-  <p>London is the capital city of England.</p>
+<div id="id_general_task" class="tabcontent">
+    <hr width="100%" />
+    <div class="checkbox">
+        <h3>Allgemein</h3>
+        <input type="text" id="id_max_runtime" name="id_max_runtime">
+        <label for="id_max_runtime">nach x Minuten schließen</label>
+    </div>
+    <hr width="100%" />
+    <div class="checkbox">
+        <h3>Start</h3>
+        <button id="id_btn_send_data" name="id_btn_send_data" onclick="myFunction()">Sart</button>
+        <label for="id_btn_send_data">Start Programm</label>
+    </div>
+    <hr width="100%" />
+    <div class="checkbox">
+        <h3>Konfigurationsdateien</h3>
+        <input type="text" id="id_path" name="id_path">
+        <label for="id_path">pfad</label>
+    </div>
+
 </div>
 
-<div id="Paris" class="tabcontent">
-  <h3>Paris</h3>
-  <p>Paris is the capital of France.</p>
-</div>
 
-<div id="Tokyo" class="tabcontent">
-  <h3>Tokyo</h3>
-  <p>Tokyo is the capital of Japan.</p>
-</div>
+
+
 
 
   </body>

@@ -136,7 +136,7 @@ json_config_data_sipra = """
 
 
 
-json_config_load = """
+json_config_load_day = """
     [
 {
     "target_system" : "Solis Omega",
@@ -215,7 +215,7 @@ json_config_data_egal = """
 ]
 """
 
-json_config_load_4gvessel = """
+json_config_load = """
     [
 
 {
@@ -228,7 +228,7 @@ json_config_load_4gvessel = """
         "miner":1
     }],
     "num_of_target_kills":80,
-    "num_of_repeats": 4,
+    "num_of_repeats": 5,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 }

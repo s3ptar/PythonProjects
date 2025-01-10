@@ -90,22 +90,33 @@ DIRECTORY = "content"
 *  \return      side content
 *********************************************************************"""
 class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
-    
-    
+
+    #def _set_headers(self):
+    #    self.send_response(200)
+    #    self.send_header('Content-type', 'text/html')
+    #    self.end_headers()
+
+    #def do_HEAD(self):
+    #    self._set_headers()
     def do_GET(self):
-        logging.info('WEeHandler Request');
         print(self.path.rpartition('.')[-1])
-        print(self.path)
+        #self._set_headers()
+        #self.send_response(200)
+        #self.send_header('Content-type', 'text/html')
+        #self.end_headers()
+        #self.wfile.write(b'Hello, world!')
         if self.path == '/':
             self.path = '/content/index.html'
             #print("base path")
-            #if self.path == '/css/style.css':
-            #    self.path = 'content/css/style.css'
-            #if self.path == '/js/javascript.js':
-            #    self.path = 'content/js/javascript.js' 
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        if self.path == '/content/css/style.css':
+            self.path = '/content/css/style.css'
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        if self.path == '/content/js/javascript.js':
+            self.path = '/content/js/javascript.js'
             return http.server.SimpleHTTPRequestHandler.do_GET(self)
             
-            
+        """    
         if self.path == '/readADC':
             #r="{<h1>Hello World</h1>}"
             r={'data':'test22'}
@@ -125,7 +136,16 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
         else:
             #self.path = 'content/index.html'
             return http.server.SimpleHTTPRequestHandler.do_GET(self)
-        
+        """
+        if '/update?' in self.path:
+            # self._set_headers()
+            print(self.path[7:-1])
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            #return http.server.SimpleHTTPRequestHandler.do_GET(self)
+
+
         
     
     def do_POST(self):
@@ -149,8 +169,8 @@ if __name__ == "__main__":
     Handler = HttpRequestHandler
     Handler.extensions_map.update({
         '.html': 'text/html',
-        '.css': 'text/css',
-        '.js': 'content/js',
+        '.css': '/content/css',
+        '.js': '/content/js',
         '.png': 'image/png',
         '.jpg': 'image/jpg',
         '.svg': 'image/svg+xml',

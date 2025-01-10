@@ -146,8 +146,10 @@ function openTab(evt, Tab) {
 
     if (Tab == "General") {
         document.getElementById("id_task_div").style.display = "none";
+        document.getElementById("id_general_task").style.display = "block";
     }else{
         document.getElementById("id_task_div").style.display = "block";
+        document.getElementById("id_general_task").style.display = "none";
     }
 
     tablinks = document.getElementsByClassName("tablinks");
@@ -207,20 +209,14 @@ function ShowDateAndTime(){
 ***********************************************************************/
 function get_data_from_srv(){
 
-    (async () => {
-  const rawResponse = await fetch('https://localhost:8087/post', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({a: 1, b: 'Textual content'})
-  });
-  const content = await rawResponse.json();
+    //var sliderValue = document.getElementById("pwmSlider").value;
+    //document.getElementById("textSliderValue").innerHTML = sliderValue;
+    //console.log(sliderValue);
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/update?"+JSON.stringify(default_dataset), true);
+    xhr.send();
 
-  console.log(content);
-})();
-    }
+}
 
 
 /***********************************************************************
@@ -240,6 +236,7 @@ function Start(status) {
     setInterval(get_data_from_srv, 10000);
     //openTab("", "General")
     document.getElementById("id_task_div").style.display = "none";
+    document.getElementById("id_general_task").style.display = "block";
 
     //test function for log tab
     //setInterval(generate_log_data, 10000);
