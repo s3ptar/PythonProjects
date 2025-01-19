@@ -446,7 +446,6 @@ def send_to_system(system_name, dock):
         pos = confirm_screen('./picture/setze_kurs_token_route.png', 0.17)
         if pos:
             move_mouse_position(pos[0])
-
         return 1
 
     else:

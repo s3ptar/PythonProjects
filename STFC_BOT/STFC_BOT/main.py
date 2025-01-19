@@ -1,12 +1,14 @@
-import json
 import os
 import navigation
 import attacking
-import datetime
-from datetime import timedelta
 import time
 import sys
-
+import msg_send
+import json
+from time import sleep
+from pynput import keyboard
+from pywinauto.keyboard import send_keys
+import threading
 """*********************************************************************
 *! \fn          main
 *  \brief       start code
@@ -15,15 +17,7 @@ import sys
 *  \return      none
 *********************************************************************"""
 
-from pywinauto import keyboard
-import json
-from time import sleep
-from pynput import keyboard
-from pywinauto.keyboard import send_keys
-# import keyboard
-from threading import Thread
-import threading
-import logging_lib
+
 
 """*********************************************************************
                 Constant
@@ -37,9 +31,6 @@ pos_recall_btn_no_chat = (100, 980)
 pos_close_chat_btn = (500, 20)
 pos_repair_screen_btn = (1200, 540)
 pos_battle_screen_btn = (1860, 850)
-
-
-
 dummy = 0
 
 """*********************************************************************
@@ -133,21 +124,37 @@ json_config_data_sipra = """
 }
 ]
 """
-
-
-
-json_config_load_day = """
+json_config_load_faction = """
     [
 {
-    "target_system" : "Solis Omega",
+    "target_system" : "Mirror Cheron",
+    "timeout_fly_to_sys" : 5,
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":1
+    }],
+    "num_of_target_kills":100,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":1
+}]
+"""
+
+
+json_config_load = """
+    [
+{
+    "target_system" : "johbacor",
     "timeout_fly_to_sys" : 300,
     "target_list":[{
         "battleship":1,
-        "interceptor":0,
-        "explorer":0,
+        "interceptor":1,
+        "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":100,
+    "num_of_target_kills":50,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
@@ -167,7 +174,7 @@ json_config_load_day = """
     "cargo_modus_enabled":1
 },
 {
-    "target_system" : "mehruunahd", 
+    "target_system" : "Pherson", 
     "timeout_fly_to_sys" : 120,
     "target_list":[{
         "battleship":1,
@@ -190,7 +197,7 @@ json_config_load_day = """
         "miner":0
     }],
     "num_of_target_kills":25,
-    "num_of_repeats": 2,
+    "num_of_repeats": 3,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 }
@@ -215,7 +222,7 @@ json_config_data_egal = """
 ]
 """
 
-json_config_load = """
+json_config_load_transporter = """
     [
 
 {
@@ -280,7 +287,7 @@ json_config_data_f = """
 """*********************************************************************
                 beta sector  - data pads
 *********************************************************************"""
-json_config_load_beta = """
+json_config_load_bate = """
     [{
     "target_system" : "beta-sektor", 
     "timeout_fly_to_sys" : 90,
@@ -291,7 +298,7 @@ json_config_load_beta = """
         "miner":0
     }],
     "num_of_target_kills":100,
-    "num_of_repeats": 4,
+    "num_of_repeats": 6,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 }
@@ -430,6 +437,16 @@ def worker(json_config_data=None):
     var_step_error_cnt = 0
     sum_of_loops = 0
     loops = 1
+    json_status_data = """{
+        "state" : "none",
+        "system" : "none",
+        "steperror" : 0,
+        "target_cnt" : 0,
+        "target_to_kill" : 0,
+        "run" : 0,
+        "runs" : 0,
+        "runtime" : 0       
+    } """
     var_time_out_to_systems_sec = 0
 
     if json_config_data == None:
@@ -474,7 +491,7 @@ def worker(json_config_data=None):
                 navigation.restart_game()
 
             rt_time = (time.time() - start_time) / 60
-            if rt_time >= 300:
+            if rt_time >= 400:
                 navigation.close_game()
                 sys.exit("Stop after 400min")
 
@@ -492,8 +509,17 @@ def worker(json_config_data=None):
                     rt_time_min=rt_time))
             # print("Killed Target : {kills} / {kills_to_go} - runtime : {rt_time_min:3.0f}min".format(
             #    kills=target_cnt, kills_to_go=task_item["num_of_target_kills"], rt_time_min=rt_time))
-
-
+            json_obj = json.loads(json_status_data)
+            json_obj['state'] = current_state
+            json_obj['system'] = task_item["target_system"]
+            json_obj['steperror'] = var_step_error_cnt
+            json_obj['target_cnt'] = target_cnt
+            json_obj['target_to_kill'] = task_item["num_of_target_kills"]
+            json_obj['run'] = loops
+            json_obj['runs'] = sum_of_loops
+            json_obj['runtime'] = rt_time
+            json_status_data = json.dumps(json_obj)
+            msg_send.publish(json_status_data)
 
             """
             Start sending ship out in space
@@ -548,21 +574,6 @@ def worker(json_config_data=None):
                         # zuviele fehlverscuhe, center ship
                         next_state = "send_to_system"
 
-                """while fighting_mode:# or not task_item['cargo_modus_enabled']:
-                    #wait unitl ship arrive
-                    #navigation.prepare_attacking()
-                    if navigation.attacking(task_item["target_list"], task_item["closed_kill_enable"]):
-                        target_cnt += 1
-                        no_target_cnt = 0
-                        rt_time = (time.time() - start_time)/60
-                        print("Killed Target : {kills} - runtime : {rt_time_min:3.0f}min" .format(kills=target_cnt, rt_time_min=rt_time))
-                        #print(f""Killed Target : {kills} - runtime : {rt_time_min} min"")
-                    else:
-                        no_target_cnt += 1
-                        # mehr als 5 fehlverscuhe nacheinander, shiff im system zerntrieren
-                        if no_target_cnt > 5:
-                            navigation.send_to_system(task_item["target_system"])
-                            no_target_cnt = 0"""
 
             if current_state == "wait_for_ship_finish_attack":
                 return_val = navigation.wait_unilt_ship_rdy(1)
@@ -606,10 +617,13 @@ def worker(json_config_data=None):
 
 if __name__ == "__main__":
 
-    #try close and reboot
-    #navigation.restart_game()
-    #navigation.repair_ship(1,1)
-
+    #read config file
+    with open("config.json") as json_data:
+        d = json_data.read()
+        #js = json.loads('{"mqtt_server_url" : "homedeb.local","mqtt_server_port" : 1883,"mqtt_server_topic" : "stfc"}')
+        js = json.loads(d)
+    msg_send.connect_mqtt(js["mqtt_server_url"], js["mqtt_server_port"], js["mqtt_server_topic"])
+    #msg_send.publish(json_config_load)
 
     abortKey = 'ctrl_l'
     listener = keyboard.Listener(on_press=on_press, abortKey=abortKey)
