@@ -1,34 +1,124 @@
 default_dataset = [
-        {
-            "target_system" : "volvo",
-    				"timeout_fly_to_sys" : 120,
-    				"target_list":[{
-        				"battleship":1,
-        				"interceptor":1,
-        				"explorer":1,
-        				"miner":0
-    	}],
-    	"num_of_target_kills":52,
-      "num_of_repeats": 4,
-    	"closed_kill_enable":1,
-    	"cargo_modus_enabled":1,
-      "task_enable":1
-		},
     {
-            "target_system" : "saab",
-    				"timeout_fly_to_sys" : 120,
-    				"target_list":[{
-        				"battleship":1,
-        				"interceptor":0,
-        				"explorer":1,
-        				"miner":1
-    	}],
-    	"num_of_target_kills":52,
-      "num_of_repeats": 6,
-    	"closed_kill_enable":1,
-    	"cargo_modus_enabled":1,
-      "task_enable":0
-		},
+        "target_system" : "volvo",
+    	"timeout_fly_to_sys" : 120,
+    	"target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+        "num_of_target_kills":52,
+        "num_of_repeats": 4,
+        "closed_kill_enable":1,
+        "cargo_modus_enabled":1,
+         "task_enable":1
+	},
+    {
+        "target_system" : "volvo",
+    	"timeout_fly_to_sys" : 120,
+    	"target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+        "num_of_target_kills":52,
+        "num_of_repeats": 4,
+        "closed_kill_enable":1,
+        "cargo_modus_enabled":1,
+         "task_enable":1
+	},
+	{
+        "target_system" : "volvo",
+    	"timeout_fly_to_sys" : 120,
+    	"target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+        "num_of_target_kills":52,
+        "num_of_repeats": 4,
+        "closed_kill_enable":1,
+        "cargo_modus_enabled":1,
+         "task_enable":1
+	},
+	{
+        "target_system" : "volvo",
+    	"timeout_fly_to_sys" : 120,
+    	"target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+        "num_of_target_kills":52,
+        "num_of_repeats": 4,
+        "closed_kill_enable":1,
+        "cargo_modus_enabled":1,
+         "task_enable":1
+	},
+	{
+        "target_system" : "volvo",
+    	"timeout_fly_to_sys" : 120,
+    	"target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+        "num_of_target_kills":52,
+        "num_of_repeats": 4,
+        "closed_kill_enable":1,
+        "cargo_modus_enabled":1,
+         "task_enable":1
+	},
+	{
+        "target_system" : "volvo",
+    	"timeout_fly_to_sys" : 120,
+    	"target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+        "num_of_target_kills":52,
+        "num_of_repeats": 4,
+        "closed_kill_enable":1,
+        "cargo_modus_enabled":1,
+         "task_enable":1
+	},
+	{
+        "target_system" : "volvo",
+    	"timeout_fly_to_sys" : 120,
+    	"target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+        "num_of_target_kills":52,
+        "num_of_repeats": 4,
+        "closed_kill_enable":1,
+        "cargo_modus_enabled":1,
+         "task_enable":1
+	},
+	{
+        "target_system" : "volvo",
+    	"timeout_fly_to_sys" : 120,
+    	"target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+        "num_of_target_kills":52,
+        "num_of_repeats": 4,
+        "closed_kill_enable":1,
+        "cargo_modus_enabled":1,
+         "task_enable":1
+	}
 ];
 
 var glb_var_tasknum;
@@ -233,7 +323,7 @@ function Start(status) {
     console.log(status);
     //Start Date and Time
     setInterval(ShowDateAndTime, 1000);
-    setInterval(get_data_from_srv, 10000);
+    //setInterval(get_data_from_srv, 10000);
     //openTab("", "General")
     document.getElementById("id_task_div").style.display = "none";
     document.getElementById("id_general_task").style.display = "block";
@@ -246,6 +336,111 @@ function Start(status) {
 
 
 }
+/***********************************************************************
+*! \fn          StarteTasks()
+*  \brief       send data to server and save programm
+*  \param       status - status from page load dunction
+*  \exception   none
+*  \return      none
+***********************************************************************/
+function StarteTasks(){
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/start_task!"+JSON.stringify(default_dataset), true);
+    xhr.send();
+
+}
+
+/***********************************************************************
+*! \fn          async function sava_config_data()
+*  \brief       save data to filesystem
+*  \param       none
+*  \exception   none
+*  \return      none
+***********************************************************************/
+async function sava_config_data(){
+
+  const extension = '.json';
+  let config_file_name = document.getElementById("id_path").value;
+  //change wrong file extension
+
+  //test if extension is correct
+  if (! config_file_name.endsWith(".json")){
+
+      //remove wrong extension
+      if(! (config_file_name.slice(-extension.length) === extension)){
+          config_file_name = config_file_name.split('.')[0];
+      }
+      config_file_name = config_file_name + extension;
+  }
+
+  config_file_name
+  console.log(config_file_name);
+	const blob = new Blob([JSON.stringify(default_dataset)], { type: 'text/plain' });
+  await saveFile(blob, config_file_name);
+
+
+}
+
+
+
+/***********************************************************************
+*! \fn          const saveFile = async (blob, suggestedName)
+*  \brief       download config file
+*  \param       blob => data
+*  \param       suggestedNam => filename
+*  \exception   none
+*  \return      none
+***********************************************************************/
+const saveFile = async (blob, suggestedName) => {
+    // Feature detection. The API needs to be supported
+    // and the app not run in an iframe.
+    const supportsFileSystemAccess =
+        'showSaveFilePicker' in window &&
+        (() => {
+            try {
+                return window.self === window.top;
+            } catch {
+                return false;
+            }
+    })();
+    // If the File System Access API is supported…
+    if (supportsFileSystemAccess) {
+        try {
+            // Show the file save dialog.
+            const handle = await showSaveFilePicker({
+                suggestedName,
+            });
+            // Write the blob to the file.
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            return;
+        } catch (err) {
+        // Fail silently if the user has simply canceled the dialog.
+        if (err.name !== 'AbortError') {
+            console.error(err.name, err.message);
+            return;
+            }
+        }
+    }
+    // Fallback if the File System Access API is not supported…
+    // Create the blob URL.
+    const blobURL = URL.createObjectURL(blob);
+    // Create the `` element and append it invisibly.
+    const a = document.createElement('a');
+    a.href = blobURL;
+    a.download = suggestedName;
+    a.style.display = 'none';
+    document.body.append(a);
+    // Click the element.
+    a.click();
+    // Revoke the blob URL and remove the element.
+    setTimeout(() => {
+        URL.revokeObjectURL(blobURL);
+        a.remove();
+    }, 1000);
+};
 
 /***********************************************************************
 *! \fn          page load
@@ -318,3 +513,16 @@ if (document.readyState) {
 
 
 
+/***********************************************************************
+*! \fn          document.getElementById("get_the_file").addEventListener("change", function()
+*  \brief       read config file
+*  \param       evt - event
+*  \exception   none
+*  \return      none
+***********************************************************************/
+async function readText(event) {
+    const file = event.target.files.item(0)
+    const text = await file.text();
+
+    default_dataset = JSON.parse(text);
+}

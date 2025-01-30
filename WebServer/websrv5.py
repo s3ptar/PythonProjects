@@ -112,6 +112,9 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
         if self.path == '/content/css/style.css':
             self.path = '/content/css/style.css'
             return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        if self.path == 'style.css':
+            self.path = '/content/css/style.css'
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
         if self.path == '/content/js/javascript.js':
             self.path = '/content/js/javascript.js'
             return http.server.SimpleHTTPRequestHandler.do_GET(self)
@@ -145,9 +148,13 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             #return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
+        if '/start_task!' in self.path:
+            print(self.path[12:-1])
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            json_obj = self.path[6:-1]
 
-        
-    
     def do_POST(self):
         print('connection ajax from:', self.address_string())
 

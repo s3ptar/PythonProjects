@@ -7,16 +7,11 @@
     <title>Basic Layout</title>
     <meta name="viewport" content="initial-scale=1.0, width=device-width">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="content/js/javascript.js"></script>
 	<link rel="stylesheet" href="content/css/style.css">
 
-    <!-- https://www.w3schools.com/howto/howto_css_fixed_sidebar.asp >
-    <!-- https://jsfiddle.net/TheSleepingEight/ucfaacsk/7/>
-    <!-- https://fontawesome.com/v4/ -->
-    <!--<script src="jquery.min.js" type="text/javascript">-->
-    <!--https://codelabs.developers.google.com/codelabs/web-serial#3-->
 
   </head>
 
@@ -46,9 +41,11 @@
     <div id="id_checkbox_esystem">
         <h3>System</h3>
         <select name="id_system" id="id_system">
-            <option value="volvo">Volvo</option>
-            <option value="saab">Saab</option>
-            <option value="trabbi">Saab</option>
+            <option value="axo'tae">axo'tae</option>
+            <option value="Pherson">Pherson</option>
+            <option value="Aquinelan Star">Aquinelan Star</option>
+            <option value="Trias">Trias</option>
+            <option value="Tesdach'koH">Tesdach'koH</option>
         </select>
         <label for="id_system">System</label>
         <input type="text" id="id_flight_time" name="id_flight_time">
@@ -92,14 +89,22 @@
     <hr width="100%" />
     <div class="checkbox">
         <h3>Start</h3>
-        <button id="id_btn_send_data" name="id_btn_send_data" onclick="myFunction()">Sart</button>
+        <button id="id_btn_send_data" name="id_btn_send_data" onclick="StarteTasks()">Sart</button>
         <label for="id_btn_send_data">Start Programm</label>
     </div>
     <hr width="100%" />
     <div class="checkbox">
         <h3>Konfigurationsdateien</h3>
+        <h5>Speichern</h5>
         <input type="text" id="id_path" name="id_path">
-        <label for="id_path">pfad</label>
+        <label for="id_path">Name</label>
+        <br>
+        <button id="id_bnt_save_data" name="id_bnt_save_data" onclick="sava_config_data()">Sart</button>
+        <label for="id_bnt_save_data">Save Config</label>
+        <br>
+        <h5>Laden</h5>
+        <input type="file" id="get_the_file" onchange="readText(event)">
+        <label for="get_the_file">Load Config File</label>
     </div>
 
 </div>

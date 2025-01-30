@@ -146,20 +146,6 @@ json_config_load_faction = """
 json_config_load = """
     [
 {
-    "target_system" : "johbacor",
-    "timeout_fly_to_sys" : 300,
-    "target_list":[{
-        "battleship":1,
-        "interceptor":1,
-        "explorer":1,
-        "miner":0
-    }],
-    "num_of_target_kills":50,
-    "num_of_repeats": 1,
-    "closed_kill_enable":1,
-    "cargo_modus_enabled":1
-},
-{
     "target_system" : "axo'tae",
     "timeout_fly_to_sys" : 60,
     "target_list":[{
@@ -168,7 +154,7 @@ json_config_load = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":20,
+    "num_of_target_kills":15,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
@@ -187,17 +173,60 @@ json_config_load = """
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 },
-   {
-    "target_system" : "Cirriped",
-    "timeout_fly_to_sys" : 90,
+{
+    "target_system" : "Aquinelan Star", 
+    "timeout_fly_to_sys" : 120,
     "target_list":[{
         "battleship":1,
         "interceptor":0,
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":25,
-    "num_of_repeats": 3,
+    "num_of_target_kills":20,
+    "num_of_repeats": 2,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":1
+},
+   {
+    "target_system" : "Trias",
+    "timeout_fly_to_sys" : 60,
+    "target_list":[{
+        "battleship":1,
+        "interceptor":0,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":30,
+    "num_of_repeats": 2,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":1
+},
+   {
+    "target_system" : "Tesdach'koH",
+    "timeout_fly_to_sys" : 60,
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":30,
+    "num_of_repeats": 1,
+    "closed_kill_enable":1,
+    "cargo_modus_enabled":1
+},
+   {
+    "target_system" : "Petra",
+    "timeout_fly_to_sys" : 10,
+    "target_list":[{
+        "battleship":1,
+        "interceptor":1,
+        
+        "explorer":1,
+        "miner":0
+    }],
+    "num_of_target_kills":15,
+    "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 }
@@ -222,11 +251,11 @@ json_config_data_egal = """
 ]
 """
 
-json_config_load_transporter = """
+json_config_load_trans = """
     [
 
 {
-    "target_system" : "romulus",
+    "target_system" : "kronos",
     "timeout_fly_to_sys" : 60,
     "target_list":[{
         "battleship":0,
@@ -287,7 +316,7 @@ json_config_data_f = """
 """*********************************************************************
                 beta sector  - data pads
 *********************************************************************"""
-json_config_load_bate = """
+json_config_load_beta = """
     [{
     "target_system" : "beta-sektor", 
     "timeout_fly_to_sys" : 90,
@@ -297,8 +326,8 @@ json_config_load_bate = """
         "explorer":1,
         "miner":0
     }],
-    "num_of_target_kills":100,
-    "num_of_repeats": 6,
+    "num_of_target_kills":150,
+    "num_of_repeats": 5,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
 }

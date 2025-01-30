@@ -432,7 +432,7 @@ def send_to_system(system_name, dock):
     if pos:
         move_mouse_position(pos[0])
         #check gorn
-        pos = confirm_screen('./picture/setze_kurs_gon.png', 0.17)
+        pos = confirm_screen('./picture/setze_kurs_gon.png', 0.01)
         if pos:
             move_mouse_position(pos[0])
         return 1
