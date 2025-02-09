@@ -1,3 +1,4 @@
+import numbers
 import os
 import navigation
 import attacking
@@ -8,7 +9,12 @@ import json
 from time import sleep
 from pynput import keyboard
 from pywinauto.keyboard import send_keys
-
+import threading
+import http.server
+import socketserver
+import json
+import logging.config
+from pythonjsonlogger import jsonlogger
 """*********************************************************************
 *! \fn          main
 *  \brief       start code
@@ -25,6 +31,31 @@ from pywinauto.keyboard import send_keys
 * Declarations
 *********************************************************************"""
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "format": "%(asctime)s %(levelname)s %(message)s",
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+        }
+    },
+    "handlers": {
+        "stdout": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "json",
+        },
+        "file":{
+            "class" : "logging.handlers.RotatingFileHandler",
+            "formatter": "json",
+            "filename": "logfile.log",
+            "maxBytes": 1024000,
+            "backupCount": 3,
+        },
+    },
+    "loggers": {"": {"handlers": ["file"], "level": "DEBUG"}},
+}
 
 """*********************************************************************
                 Constant
@@ -39,7 +70,9 @@ pos_close_chat_btn = (500, 20)
 pos_repair_screen_btn = (1200, 540)
 pos_battle_screen_btn = (1860, 850)
 dummy = 0
-
+hostName = "localhost"
+serverPort = 8087
+DIRECTORY = "content"
 """*********************************************************************
                 local val
 *********************************************************************"""
@@ -149,7 +182,6 @@ json_config_load_faction = """
 }]
 """
 
-
 json_config_load = """
     [
 {
@@ -218,21 +250,6 @@ json_config_load = """
         "miner":0
     }],
     "num_of_target_kills":30,
-    "num_of_repeats": 1,
-    "closed_kill_enable":1,
-    "cargo_modus_enabled":1
-},
-   {
-    "target_system" : "Petra",
-    "timeout_fly_to_sys" : 10,
-    "target_list":[{
-        "battleship":1,
-        "interceptor":1,
-        
-        "explorer":1,
-        "miner":0
-    }],
-    "num_of_target_kills":15,
     "num_of_repeats": 1,
     "closed_kill_enable":1,
     "cargo_modus_enabled":1
@@ -417,6 +434,104 @@ json_config_load_gorn = """
 }
 ]
 """
+"""*********************************************************************
+*! \fn          convert_to_number(obj
+*  \brief       handler function for web request
+*  \param       BaseHTTPRequestHandler - request data
+*  \exception   none
+*  \return      side content
+*********************************************************************"""
+def convert_to_number(obj):
+    if isinstance(obj, numbers.Number):
+        return obj
+    else:
+        return int(obj)
+
+"""*********************************************************************
+*! \fn          async def handler_web_request(BaseHTTPRequestHandler)
+*  \brief       handler function for web request
+*  \param       BaseHTTPRequestHandler - request data
+*  \exception   none
+*  \return      side content
+*********************************************************************"""
+
+
+class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
+
+    # def _set_headers(self):
+    #    self.send_response(200)
+    #    self.send_header('Content-type', 'text/html')
+    #    self.end_headers()
+
+    # def do_HEAD(self):
+    #    self._set_headers()
+    def do_GET(self):
+        print(self.path.rpartition('.')[-1])
+        # self._set_headers()
+        # self.send_response(200)
+        # self.send_header('Content-type', 'text/html')
+        # self.end_headers()
+        # self.wfile.write(b'Hello, world!')
+        if self.path == '/':
+            self.path = '/content/index.html'
+            # print("base path")
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        if self.path == '/content/css/style.css':
+            self.path = '/content/css/style.css'
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        if self.path == 'style.css':
+            self.path = '/content/css/style.css'
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        if self.path == '/content/js/javascript.js':
+            self.path = '/content/js/javascript.js'
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+
+        """    
+        if self.path == '/readADC':
+            #r="{<h1>Hello World</h1>}"
+            r={'data':'test22'}
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+
+            json_string = json.dumps(r)
+            self.wfile.write(json_string.encode(encoding='utf_8'))
+            #self.wfile.write(r.encode("utf-8"))
+            self.wfile.flush()
+            print(r)
+
+            #self.wfile.write("<?xml version='1.0'?>");
+            #self.wfile.write("<sample>Some XML</sample>");
+            #self.wfile.close();
+        else:
+            #self.path = 'content/index.html'
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        """
+        if '/update?' in self.path:
+            # self._set_headers()
+            print(self.path[7:-1])
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            # return http.server.SimpleHTTPRequestHandler.do_GET(self)
+
+        if '/start_task!' in self.path:
+            print(self.path[12:-1])
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            json_obj = self.path[12:-1] + "]"
+            json_obj = json_obj.replace("%7B", "{")
+            json_obj = json_obj.replace("%7D", "}")
+            json_obj = json_obj.replace("%22", "\"")
+            json_obj = json_obj.replace("%20", " ")
+            json_obj = json.dumps(json_obj,separators=(',', ':'))
+            json_obj = json.loads(json_obj)
+
+            worker(json_obj)
+
+    def do_POST(self):
+        print('connection ajax from:', self.address_string())
 
 
 """*********************************************************************
@@ -501,17 +616,21 @@ def worker(json_config_data=None):
     task_data = json.loads(json_config_data)
 
     for item in task_data:
-        mycnt = item['num_of_repeats']
-        sum_of_loops += mycnt
+        if bool(item['task_enable']):
+            mycnt = int(item['num_of_repeats'])
+            sum_of_loops += mycnt
 
     for task_item in task_data:
+
+        if not bool(task_item['task_enable']):
+            break
 
         current_state = "send_to_system"
         next_state = "send_to_system"
         target_cnt = 0
-        var_time_out_to_systems_sec = task_item["timeout_fly_to_sys"]
+        var_time_out_to_systems_sec = int(task_item["timeout_fly_to_sys"])
 
-        repeat_loops = task_item["num_of_repeats"]
+        repeat_loops = int(task_item["num_of_repeats"])
         while repeat_loops:
 
             if not user_interaction._value:
@@ -548,7 +667,7 @@ def worker(json_config_data=None):
                     task_current_state=current_state,
                     activ_system=task_item["target_system"],
                     trg_cnt=target_cnt,
-                    trg_to_do=task_item["num_of_target_kills"],
+                    trg_to_do=int(task_item["num_of_target_kills"]),
                     loop_cnt=loops,
                     all_repeats=sum_of_loops,
                     rt_time_min=rt_time))
@@ -559,7 +678,7 @@ def worker(json_config_data=None):
             json_obj['system'] = task_item["target_system"]
             json_obj['steperror'] = var_step_error_cnt
             json_obj['target_cnt'] = target_cnt
-            json_obj['target_to_kill'] = task_item["num_of_target_kills"]
+            json_obj['target_to_kill'] = int(task_item["num_of_target_kills"])
             json_obj['run'] = loops
             json_obj['runs'] = sum_of_loops
             json_obj['runtime'] = rt_time
@@ -571,7 +690,8 @@ def worker(json_config_data=None):
             """
             if current_state == "send_to_system":
                 #print("send to system " + task_item["target_system"])
-                return_val = navigation.send_to_system(task_item["target_system"], 1)
+                target_system = (task_item["target_system"]).replace("___","'")
+                return_val = navigation.send_to_system(target_system, 1)
                 fighting_mode = 1
                 if return_val:
                     next_state = "wait_for_ship_arrive_system"
@@ -594,7 +714,7 @@ def worker(json_config_data=None):
 
             if current_state == "attack_targets":
                 # navigation.prepare_attacking()
-                if attacking.attacking(task_item["target_list"], task_item["closed_kill_enable"]):
+                if attacking.attacking(task_item["target_list"], bool(task_item["closed_kill_enable"])):
                     target_cnt += 1
                     retry_target_cnt += 1
                     retry_target_cnt = 0
@@ -623,20 +743,20 @@ def worker(json_config_data=None):
             if current_state == "wait_for_ship_finish_attack":
                 return_val = navigation.wait_unilt_ship_rdy(1)
                 if return_val:
-                    if ((target_cnt >= task_item["num_of_target_kills"])):
+                    if ((target_cnt >= int(task_item["num_of_target_kills"]))):
                         # send ship home
                         sleep(2)
                         send_keys('%m')
                         send_keys('%m')
                         send_keys('%m')
                         next_state = "send_ship_home"
-                    elif navigation.check_ship(1, task_item["cargo_modus_enabled"]):
+                    elif navigation.check_ship(1, bool(task_item["cargo_modus_enabled"])):
                         next_state = "send_ship_home"
                     else:
                         next_state = "attack_targets"
 
             if current_state == "send_ship_home":
-                sleep(task_item["timeout_fly_to_sys"])
+                sleep(int(task_item["timeout_fly_to_sys"]))
                 return_val = navigation.wait_unilt_ship_rdy(1)
                 if return_val:
                     next_state = "repair_ship"
@@ -653,7 +773,7 @@ def worker(json_config_data=None):
                 bl_rist_time_rep = 1
                 if return_val:
                     next_state = "send_to_system"
-                    var_time_out_to_systems_sec = task_item["timeout_fly_to_sys"]
+                    var_time_out_to_systems_sec = int(task_item["timeout_fly_to_sys"])
                     repeat_loops -= 1
                     loops = loops + 1
                     bl_rist_time_rep = 0
@@ -687,6 +807,28 @@ if __name__ == "__main__":
     print("chat close")
     navigation.close_chat_window()
 
+    Handler = HttpRequestHandler
+    Handler.extensions_map.update({
+        '.html': 'text/html',
+        '.css': '/content/css',
+        '.js': '/content/js',
+        '.png': 'image/png',
+        '.jpg': 'image/jpg',
+        '.svg': 'image/svg+xml',
+        '.ico': 'image/x-icon',
+    })
+    Handler.DIRECTORY = "content"
+    my_server = socketserver.TCPServer(("", serverPort), Handler)
+    print("Server started http://%s:%s" % (hostName, serverPort))
+    logging.info("An info")
+    logging.warning("A warning")
+
+    #worker(json_config_load)
+
+    try:
+        my_server.serve_forever()
+    except KeyboardInterrupt:
+        pass
 
     # navigation.repair_ship(1)
-    worker(json_config_load)
+    #worker(json_config_load)
