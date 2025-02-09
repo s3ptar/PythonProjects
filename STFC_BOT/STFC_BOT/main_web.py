@@ -434,18 +434,6 @@ json_config_load_gorn = """
 }
 ]
 """
-"""*********************************************************************
-*! \fn          convert_to_number(obj
-*  \brief       handler function for web request
-*  \param       BaseHTTPRequestHandler - request data
-*  \exception   none
-*  \return      side content
-*********************************************************************"""
-def convert_to_number(obj):
-    if isinstance(obj, numbers.Number):
-        return obj
-    else:
-        return int(obj)
 
 """*********************************************************************
 *! \fn          async def handler_web_request(BaseHTTPRequestHandler)
@@ -513,6 +501,26 @@ class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
+            # return http.server.SimpleHTTPRequestHandler.do_GET(self)
+
+        if '/update_system?' in self.path:
+            # self._set_headers()
+            print(self.path[7:-1])
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+
+            with open("systems.json") as json_systems:
+                systems = json_systems.read()
+                jsystems = json.loads(systems)
+
+            options_string = ""
+            for system in jsystems["systems"]:
+                # <option value="axo'tae">axo'tae</option>
+                #options_string += "<option value=\"" + system + "\">" + system + "</option>\r\n"
+                options_string += system+","
+
+            self.wfile.write(bytes(options_string, "utf-8"))
             # return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
         if '/start_task!' in self.path:
@@ -798,6 +806,7 @@ if __name__ == "__main__":
         # js = json.loads('{"mqtt_server_url" : "homedeb.local","mqtt_server_port" : 1883,"mqtt_server_topic" : "stfc"}')
         js = json.loads(d)
     msg_send.connect_mqtt(js["mqtt_server_url"], js["mqtt_server_port"], js["mqtt_server_topic"])
+
 
     abortKey = 'ctrl_l'
     listener = keyboard.Listener(on_press=on_press, abortKey=abortKey)

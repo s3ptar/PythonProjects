@@ -308,7 +308,31 @@ function get_data_from_srv(){
     xhr.send();
 
 }
+/***********************************************************************
+*! \fn          function update_systems()
+*  \brief       update system from files
+*  \param       none
+*  \exception   none
+*  \return      none
+***********************************************************************/
+function update_systems(){
 
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var systemlist = document.document.getElementById("id_checkbox_system");
+            let SystemArray = (this.responseText).split(",");
+            SystemArray.forEach(function(system_item){
+                systemlist.add(new Option(system_item));
+                console.log(system_item);
+            });
+
+        }
+    };
+    xhr.open("GET", "/update_system?", true);
+    xhr.send();
+
+}
 
 /***********************************************************************
 *! \fn          function Start(status)
@@ -326,6 +350,7 @@ function Start(status) {
     setInterval(ShowDateAndTime, 1000);
     //setInterval(get_data_from_srv, 10000);
     //openTab("", "General")
+    update_systems();
     document.getElementById("id_task_div").style.display = "none";
     document.getElementById("id_general_task").style.display = "block";
 
@@ -333,7 +358,6 @@ function Start(status) {
     //setInterval(generate_log_data, 10000);
     // add your script calls here...
     //hide all elements, expect home
-
 
 
 }
